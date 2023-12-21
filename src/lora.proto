@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package lora;
+
+message LoRaMessage {
+  uint32 device_id = 1;       // Unique identifier for the LoRa device
+  double latitude = 2;        // Latitude of the device
+  double longitude = 3;       // Longitude of the device
+  float altitude = 4;         // Altitude of the device
+  string payload = 5;         // Payload data
+  int32 signal_strength = 6;  // Signal strength in dBm
+  bool ack_required = 7;      // Flag indicating whether an acknowledgment is required
+  //
+  // Add other fields as needed
+  //
+  // LoRaMessage represents a basic LoRa message with fields for device
+  // identifier, location (latitude, longitude, altitude), payload data, signal strength, and an acknowledgment flag.
+  // You may need to customize this definition based on the specific requirements of your LoRa application and the 
+  // data you want to include in your messages. Refer to the LoRaWAN specification or documentation for more 
+  // details on the message formats used in LoRa communication. As always, use a protobuf compiler (such as protoc)
+  // to compile this .proto file into language-specific code for use in your application.
+}
