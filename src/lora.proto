@@ -13,10 +13,11 @@ message LoRaMessage {
   //
   // Add other fields as needed
   //
-  // LoRaMessage represents a basic LoRa message with fields for device
-  // identifier, location (latitude, longitude, altitude), payload data, signal strength, and an acknowledgment flag.
-  // You may need to customize this definition based on the specific requirements of your LoRa application and the 
-  // data you want to include in your messages. Refer to the LoRaWAN specification or documentation for more 
-  // details on the message formats used in LoRa communication. As always, use a protobuf compiler (such as protoc)
-  // to compile this .proto file into language-specific code for use in your application.
+  // LoRaMessage represents a basic LoRa message with fields for device identifier, location
+  // (latitude, longitude, altitude), payload data, signal strength, and an acknowledgment flag.
+  // You may need to customize this definition based on the specific requirements of your LoRa
+  // application and the data you want to include in your messages. Refer to the LoRaWAN 
+  // specification or documentation for more details on the message formats used in LoRa
+  // communication. As always, use a protobuf compiler (such as protoc) to compile this
+  // .proto file into language-specific code for use in your application.
 }
