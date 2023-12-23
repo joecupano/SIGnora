@@ -55,10 +55,10 @@ var myRadio = {
 	},
 	MODEMS: {
 		0:{modemconfig: "Bw125Cr45Sf128", modemname: "MEDIUM", spreadfactor: 7, codingrate4: 8, bandwidth: 125000},
-		1:{modemconfig: "Bw500Cr45Sf128", modemname: "FAST-SHRT", spreadfactor: 7, codingrate4: 5, bandwidth: 500000},
-		2:{modemconfig: "Bw31_25Cr48Sf512", modemname: "SLOW-LNG1", spreadfactor: 7, codingrate4: 8, bandwidth: 31250},
-		3:{modemconfig: "Bw125Cr48Sf4096", modemname: "SLOW-LNG2", spreadfactor: 12, codingrate4: 8, bandwidth: 125000},
-		4:{modemconfig: "Bw125Cr45Sf2048", modemname: "SLOW-LNG3", spreadfactor: 8, codingrate4: 5, bandwidth: 125000}
+		1:{modemconfig: "Bw500Cr45Sf128", modemname: "FAST-SHORT", spreadfactor: 7, codingrate4: 5, bandwidth: 500000},
+		2:{modemconfig: "Bw31_25Cr48Sf512", modemname: "SLOW-LONG1", spreadfactor: 7, codingrate4: 8, bandwidth: 31250},
+		3:{modemconfig: "Bw125Cr48Sf4096", modemname: "SLOW-LONG2", spreadfactor: 12, codingrate4: 8, bandwidth: 125000},
+		4:{modemconfig: "Bw125Cr45Sf2048", modemname: "SLOW-LONG3", spreadfactor: 8, codingrate4: 5, bandwidth: 125000}
 	}
 }
 
@@ -70,7 +70,7 @@ var myPacket = {
 }
 
 /* Programmable Channels */
-var myChannels = [0,1,2,3,,5,6,7,8,9];
+var myChannels = [0,1,2,3,4,5,6,7,8,9];
 
 /* Selectable LoRa modems */
 var myModems = [0,1,2,3,4];
