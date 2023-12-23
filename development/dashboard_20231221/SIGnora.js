@@ -89,6 +89,7 @@ var bandwidth_setting_element = document.getElementById('bandwidth-setting');
 var channelname_setting_element = document.getElementById('channelname-setting');
 
 /* Radio and Msg Module Commands */
+var radioGUI = 0;                                        //  0 = Basic, 1 = Expert
 var radioFUNCT = 0;                                      //  0 = Listen, 1 = Repeat, 2 = Beacon
 var radioBEACON = 0;                                     //  0 = Beacon OFF, 1 = Beacon ON  
 var radioTXPWR = 5;                                      //  TX Power can be 5 to 21    
@@ -157,6 +158,50 @@ function btnNUM(localChannelnum) {
 	updateTuner(myRadio.RADIO.frequency, myRadio.RADIO.modem);
 	updateDisplay();
 }
+
+function btnGUI() {
+	console.log("RADIO: btnGUI: clicked");
+	var el_btnGUI = document.getElementById('btnGUI');
+	var el_btnFREQ = document.getElementById('btnFREQ');
+	var el_btnSF = document.getElementById('btnSF');
+	var el_btnBW = document.getElementById('btnBW');
+	var el_btnCR = document.getElementById('btnCR');
+	if (radioGUI == 0) {
+		radioGUI = 1;
+		el_btnGUI.style.background = "Orange";
+		el_btnGUI.innerHTML = "EXP";
+		el_btnFREQ.style.background = "Black";
+		el_btnSF.style.background = "Black";
+		el_btnBW.style.background = "Black";
+		el_btnCR.style.background = "Black";
+		el_btnFREQ.innerHTML = "FREQ";
+		el_btnSF.innerHTML = "SF";
+		el_btnBW.innerHTML = "BW";
+		el_btnCR.innerHTML = "CR";
+		socket.send("SET:RADIO:EXPERT");
+		console.log("RADIO: btnGUI: EXPERT");
+		previous_entry = 1;
+		previous_operation = "RADIO:EXPERT";
+	} 
+	else {
+		radioGUI = 0;
+		el_btnGUI.style.background = "Black";
+		el_btnGUI.innerHTML = "BASIC";
+		el_btnFREQ.style.background = "Black";
+		el_btnSF.style.background = "Black";
+		el_btnBW.style.background = "Black";
+		el_btnCR.style.background = "Black";
+		el_btnFREQ.innerHTML = " ";
+		el_btnSF.innerHTML = " ";
+		el_btnBW.innerHTML = " ";
+		el_btnCR.innerHTML = " ";
+		socket.send("SET:RADIO:BASIC");
+		console.log("RADIO: btnGUI: BASIC");
+		previous_entry = 1;
+		previous_operation = "RADIO:BASIC";
+	}
+}
+
 
 function btnRST() {
 	getHasJson.open('GET', url, true);
@@ -411,7 +456,12 @@ function btnHEAD() {
 
 function btnHELP() {
 	console.log("MSG: btnHELP: clicked");
-	rxwinMSGhelp();
+	if (radioGUI == 0) {
+		rxwinMSGhelp();
+	}
+	if (radioGUI == 1) {
+		rxwinMSGexperthelp();
+	}
 	rxwinMSG('-');
 	previous_entry = "HELP";
 	previous_operation == "CLICK";
@@ -541,11 +591,41 @@ function rxwinMSG(message) {
 
 function rxwinMSGhelp() {
 	rxDisplay [26] = "-"
-	rxDisplay [25] = "................ SIGnora WebUI Instructions .............."
+	rxDisplay [25] = "................ SIGnora Basic Instructions .............."
 	rxDisplay [24] = "-"
-	rxDisplay [23] = "......... KEYPAD .......... ..... RF CONTROL TOGGLES ....."
+	rxDisplay [23] = "........ KEYPAD ......... ...... RADIO CONTROL TOGGLES ...."
 	rxDisplay [22] = "-"
-	rxDisplay [21] = "- 0 to 9 LoRa Modem ------- ----- RX, REPEAT, or BEACON"
+	rxDisplay [21] = "- 0-9 = LoRa Modem  ------ ----- RX / REPEAT / BEACON Modes"
+  	rxDisplay [20] = "- RST = Reset Keypad ---- ----- LOW / MED / HIGH RF Power"
+  	rxDisplay [19] = "- CLR = Clear Display --- ----- LORA / XARPS / FSK Modes"
+  	rxDisplay [18] = "- ----------------------- ----- BASIC /EXPERT Menu"
+	rxDisplay [17] = "-"
+	rxDisplay [16] = "..................... MESSAGE CONTROLS ....................."
+	rxDisplay [15] = "-"
+  	rxDisplay [14] = "- CALL = myCall Macro ------- ---- LOG = Log on/off (toggle)"
+  	rxDisplay [13] = "- DEST = dstCall Macro ------ --- RCLR = Clear RX Window"
+  	rxDisplay [12] = "- HEAD = Message Header------ --- MCLR = TX window clear"
+  	rxDisplay [11] = "- HELP = This screen -------- --- SEND = Sends TX Window"
+  	rxDisplay [10] = "- "
+	rxDisplay [9] = ".................... TX WINDOW COMMANDS ...................."
+	rxDisplay [8] = "-"	  
+  	rxDisplay [7] = "- .myCALL NOCALL-00     Changes CALL macro to hold NOCALL-00"
+  	rxDisplay [6] = "- .dstCALL BL0B-50      Changes DEST macro to hold BL0B-50"
+  	rxDisplay [5] = "- .macro1 blah blah     Changes M1 button to hold blah blah"
+  	rxDisplay [4] = "-"
+	rxDisplay [3] = "..... TO SEND A MESSAGE"
+	rxDisplay [2] = "-"  
+  	rxDisplay [1] = "- Via Macro buttons click HEAD, M1, then SEND"
+  	rxDisplay [0] = "- Type YourCall>DestCall|MESSAGE in TX window then click SEND"
+}
+
+function rxwinMSGexperthelp() {
+	rxDisplay [26] = "-"
+	rxDisplay [25] = ".................... SIGnora Expert Instructions .................."
+	rxDisplay [24] = "-"
+	rxDisplay [23] = "............ KEYPAD .......... ........ RADIO CONTROL TOGGLES ....."
+	rxDisplay [22] = "-"
+	rxDisplay [21] = "- 0-9,. = Tune Frequency ------- ----- RX/REPEAT/BEACON"
   	rxDisplay [20] = "- RST = Reset Keypad ------ ----- LOW, MED, HIGH RF Power"
   	rxDisplay [19] = "- CLR = Clear Display ----- ----  LORA, XARPS, FSK Modes"
   	rxDisplay [18] = "- ENT = Update Radio Freq - --------- Send quick ID"
@@ -568,7 +648,6 @@ function rxwinMSGhelp() {
   	rxDisplay [1] = "- Via Macro buttons click HEAD, M1, then SEND"
   	rxDisplay [0] = "- Type YourCall>DestCall|MESSAGE in TX window then click SEND"
 }
-
 
 /* --- Transmitter-Module --- */
 
@@ -633,7 +712,12 @@ previous_entry = "";
 previous_operation = "INIT";                    // Set last operation
 
 // Load RX Window with Help Message
-rxwinMSGhelp();
+if (radioGUI == 0) {
+	rxwinMSGhelp();
+}
+if (radioGUI == 1) {
+	rxwinMSGexperthelp();
+}
 rxwinMSG('-');
 
 /* Establish Websocket */

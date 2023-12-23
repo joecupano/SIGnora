@@ -22,7 +22,8 @@
   'tuner-container rx-container'
   'radio-controls-container rx-container'
   'cmd-controls-container rx-container'
-  'msg-controls-container tx-container';
+  'msg-controls-container tx-container'
+  'macro-controls-container tx-container';
   grid-gap: 16px;
   background-color: black;
   border-radius: 12px;
@@ -65,6 +66,14 @@
   padding: 8px;
 }
 
+.macro-controls-container {
+  grid-area: macro-controls-container;
+  width: 256px;
+  grid-gap: 8px;
+  background-color: black;
+  border-radius: 12px;
+  padding: 8px;
+}
 .rx-container {
   grid-area: rx-container;
   width: 692px;
@@ -283,7 +292,7 @@
 /*
  -
  - Buttons CSS   20201224-2300 
- - -- Used by radio-controls-container, cmd-controls-container, and msg-controls-container
+ - -- Used by radio-controls-container, cmd-controls-container, msg-controls-container, macro-controls-container
  -
 */
 
@@ -301,6 +310,13 @@
   background-image: none;
   box-shadow: none;
   clear: right;
+}
+
+.keypad-btn-green > div {
+  background-color: #138004;
+  box-shadow: inset 0 -13px 1px rgba(50, 50, 50, 0.5),
+  inset 0 1px 1px rgba(255, 255, 255, 0.25),
+  inset 0 8px 6px rgba(255, 255, 255, 0.2);
 }
 .keypad-btn-brown > div {
   background-color: #635045;
@@ -435,6 +451,33 @@
 }
 
 .msg-controls-container:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.macro-controls-container {
+  display: block;
+  width: 240px; /* only needed in Chrome extension */
+  height: 80px;
+  padding: 10px 10px 10px;
+  font: bold 15px/28px Arial, Helvetica, sans-serif;
+  border-radius: 12px;
+  box-shadow: inset 0px -38px 5px rgba(0, 0, 0, 0.8),
+    inset 0px 6px 4px rgba(255, 255, 255, 0.25),
+    inset 0px 2px 1px rgba(255, 255, 255, 0.25),
+    inset 3px 0px 3px rgba(255, 255, 255, 0.25),
+    inset -4px 0px 4px rgba(0, 0, 0, 0.75);
+  background: #141414; /* Old browsers */
+  background: -moz-linear-gradient(top, #141414 45%, #282828 80%);                                                   /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(45%, #141414), color-stop(80%, #282828));   /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,#141414 45%,#282828 80%);                                                  /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,#141414 45%,#282828 80%);                                                       /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #141414 45%, #282828 80%);                                                    /* IE10+ */
+  background: linear-gradient(to bottom, #141414 45%, #282828 80%);                                                  /* W3C */
+}
+
+.macro-controls-container:after {
   content: "";
   display: block;
   clear: both;
