@@ -89,15 +89,18 @@ var bandwidth_setting_element = document.getElementById('bandwidth-setting');
 var channelname_setting_element = document.getElementById('channelname-setting');
 
 /* Radio and Msg Module Commands */
-var radioFUNCT = 0;                                                 //  0 = Listen, 1 = Repeat, 2 = Beacon
-var radioBEACON = 0;                                                //  0 = Beacon OFF, 1 = Beacon ON  
-var radioTXPWR = 5;                                                 //  TX Power can be 5 to 21    
-var radioLOG = 0;                                                   //  0 = Logging OFF, 1 = Logging ON
-var radioMODE = 0;                                                  //  0 = LORA, 1 = XARPS, 2 = FSK
-var msgENTERED = "";												//  Typed into TX_Window      
-var msgPARSED = [];													//  For processing two-part command
-var msgSUBPARSED = [];												//  For processing two-part command  
-var msgPARTICLE = [];												//  For processing two-part command  
+var radioFUNCT = 0;                                      //  0 = Listen, 1 = Repeat, 2 = Beacon
+var radioBEACON = 0;                                     //  0 = Beacon OFF, 1 = Beacon ON  
+var radioTXPWR = 5;                                      //  TX Power can be 5 to 21    
+var radioLOG = 0;                                        //  0 = Logging OFF, 1 = Logging ON
+var radioMODE = 0;                                       //  0 = LORA, 1 = XARPS, 2 = FSK
+var radioSF = 7;                                         //  Spread Factor (LoRa)
+var radioCRD = 8;                                        //  Coding Rate (LoRa)
+var radioBW = 125000;                                    //  Bandwidth (LoRa)
+var msgENTERED = "";								     //  Typed into TX_Window      
+var msgPARSED = [];										 //  For processing two-part command
+var msgSUBPARSED = [];									 //  For processing two-part command  
+var msgPARTICLE = [];									 //  For processing two-part command  
 
 var previous_operation = "";
 var current_operation = "";
@@ -278,6 +281,27 @@ function btnBEACON() {
 		console.log("RADIO: btnBEACON: Beacon ON");
 		previous_entry = 0;
 		previous_operation = "BEACON:ON";
+	 }
+	 else if (radioBEACON == 1){
+		 radioBEACON = 0;
+		 el_btnBEACON.style.background = "Black";
+		 socket.send("SET:BEACON:OFF");
+		 console.log("RADIO: btnBEACON: Beacon OFF");
+		 previous_entry = 0;
+		 previous_operation = "BEACON:OFF";
+	 }
+}
+
+function btnSF() {
+	console.log("RADIO: btnSF: clicked");
+	var el_btnSF = document.getElementById('btnSF');
+	if (radioSF == 0) {
+		radioSF = 1;
+		el_btnSF.style.background = "Black";
+		socket.send("SET:SF:1");
+		console.log("RADIO: btnSF: 1");
+		previous_entry = 1;
+		previous_operation = "SF:1";
 	 }
 	 else if (radioBEACON == 1){
 		 radioBEACON = 0;
