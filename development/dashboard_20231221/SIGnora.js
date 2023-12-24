@@ -244,7 +244,7 @@ function btnRADIO() {
 	else if (radioFUNCT == 2){
 		radioFUNCT = 0;
 		el_btnRADIO.style.background = "Black";
-		el_btnRADIO.innerHTML = "RX";
+		el_btnRADIO.innerHTML = "TRX";
 		socket.send("SET:RADIO:LISTEN");
 		console.log("RADIO: btnRADIO: Radio LISTEN");
 		previous_entry = 0;
