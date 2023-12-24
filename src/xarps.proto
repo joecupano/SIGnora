@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package aprs;
+package xarps;
 
 // Position Report
 message PositionReport {
@@ -40,7 +40,7 @@ message StatusReport {
 }
 
 // Message
-message AprsMessage {
+message XarpsMessage {
   string source_callsign = 1;        // Callsign of the sender
   string destination_callsign = 2;   // Callsign of the recipient
   string message_text = 3;           // Text of the message
