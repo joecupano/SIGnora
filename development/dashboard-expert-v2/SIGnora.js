@@ -149,7 +149,7 @@ function updateDisplay() {
 	else {
 		channelname_setting_element.innerText= " ";
 	}
-	console.log("DISPLAY: Updated");
+	console.log("DISPLAY:UPDATED");
 }
 
 function updateFreqDisplay(myNum) {
@@ -162,13 +162,13 @@ function updateTuner() {
 	msgSOX = "SET:TUNER:FREQ:" + myRadio.RADIO.frequency;
 	socket.send(msgSOX);
 	console.log(msgSOX);
-	msgSOX = "SET:LORA:BANDWIDTH:" + myRadio.RADIO.bandwidth;
+	msgSOX = "SET:LORA:BANDWIDTH:" + myRadio.LORA.bandwidth;
 	socket.send(msgSOX);
 	console.log(msgSOX);
-	msgSOX = "SET:LORA:SPREAD:" + myRadio.RADIO.spreadfactor;
+	msgSOX = "SET:LORA:SPREAD:" + myRadio.LORA.spreadfactor;
 	socket.send(msgSOX);
 	console.log(msgSOX);
-	msgSOX = "SET:LORA:CODING:" + myRadio.RADIO.codingrate4;
+	msgSOX = "SET:LORA:CODING:" + myRadio.LORA.codingrate4;
 	socket.send(msgSOX);
 	console.log(msgSOX);
 }
@@ -181,7 +181,7 @@ function btnNUM(numberPad) {
 		myRadio.LORA.codingrate4 = myRadio.MODEMS[myRadio.CHANNELS[numberPad].modem].codingrate4;
 		myRadio.LORA.bandwidth = myRadio.MODEMS[myRadio.CHANNELS[numberPad].modem].bandwidth;
 		myRadio.LORA.spreadfactor = myRadio.MODEMS[myRadio.CHANNELS[numberPad].modem].spreadfactor;
-		console.log("TUNER:CHANNEL:" + myRadio.RADIO.channelname);
+		console.log("RADIO:CHANNEL:" + myRadio.RADIO.channelname);
 		updateTuner();
 		updateDisplay();
 	}
@@ -262,7 +262,7 @@ function btnRADIO() {
 		el_btnRADIO.style.background = "Orange";
 		el_btnRADIO.innerHTML = "REPT";
 		socket.send("SET:RADIO:REPEAT");
-		console.log("RADIO: btnRADIO: Radio REPEAT");
+		console.log("RADIO: btnRADIO: REPEAT");
 		previous_entry = 1;
 		previous_operation = "RADIO:REPEAT";
 	 }
@@ -449,26 +449,34 @@ function btnCR() {
 function btnBW() {
 	console.log("RADIO: btnBW: clicked");
 	if (radioGUI == 1) {
-		switch (myRadio.LORA.bandwidth) {
-			case '7800':
-				myRadio.LORA.bandwidth = 10400;
-			case '10400':
-				myRadio.LORA.bandwidth = 15600;
-			case '15600':
-				myRadio.LORA.bandwidth = 20800;
-			case '20800':
-				myRadio.LORA.bandwidth = 31250;
-			case '31250':
-				myRadio.LORA.bandwidth = 41700;
-			case '41700':
-				myRadio.LORA.bandwidth = 62500;
-			case '62500':
-				myRadio.LORA.bandwidth = 125000;
-			case '125000':
-				myRadio.LORA.bandwidth = 256000;
-			case '256000':
-				myRadio.LORA.bandwidth = 512000;
-			case '512000':
+		if (myRadio.LORA.bandwidth == 7800) {
+			myRadio.LORA.bandwidth = 10400;
+		}
+		else if (myRadio.LORA.bandwidth == 10400) {
+			myRadio.LORA.bandwidth = 15600;
+		}
+		else if (myRadio.LORA.bandwidth == 15600) {
+			myRadio.LORA.bandwidth = 20800;
+		}
+		else if (myRadio.LORA.bandwidth == 20800) {
+			myRadio.LORA.bandwidth = 31250;
+		}
+		else if (myRadio.LORA.bandwidth == 31250) {
+			myRadio.LORA.bandwidth = 41700;
+		}
+		else if (myRadio.LORA.bandwidth == 41700) {
+			myRadio.LORA.bandwidth = 62500;
+		}
+		else if (myRadio.LORA.bandwidth == 62500) {
+			myRadio.LORA.bandwidth = 125000;
+		}
+		else if (myRadio.LORA.bandwidth == 125000) {
+			myRadio.LORA.bandwidth = 250000;
+		}
+		else if (myRadio.LORA.bandwidth == 250000) {
+			myRadio.LORA.bandwidth = 500000;
+		}
+		else if (myRadio.LORA.bandwidth == 512000) {
 				myRadio.LORA.bandwidth = 7800;
 		}
 		socket.send("SET:RADIO:LORA:BW" + myRadio.LORA.bandwidth);
