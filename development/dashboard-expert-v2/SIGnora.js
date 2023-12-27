@@ -490,7 +490,6 @@ function btnBW() {
 /* --- Macros Module --- */
 
 function btnC1() {
-	console.log("MACRO: btnC1: clicked");
 	msgENTERED = msgENTERED + myCMacros[0];
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "C1";
@@ -499,7 +498,6 @@ function btnC1() {
 }
 
 function btnC2() {
-	console.log("MACRO: btnC2: clicked");
 	msgENTERED = msgENTERED + myCMacros[1];
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "C2";
@@ -508,7 +506,6 @@ function btnC2() {
 }
 
 function btnC3() {
-	console.log("MACRO: btnC3: clicked");
 	msgENTERED = msgENTERED + myCMacros[2];
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "C3";
@@ -517,7 +514,6 @@ function btnC3() {
 }
 
 function btnC4() {
-	console.log("MACRO: btnC4: clicked");
 	msgENTERED = msgENTERED + myCMacros[3];
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "C4";
@@ -526,7 +522,6 @@ function btnC4() {
 }
 
 function btnM1() {
-	console.log("MACRO: btnM1: clicked");
 	msgENTERED = msgENTERED + myMacros[0];
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "M1";
@@ -535,7 +530,6 @@ function btnM1() {
 }
 
 function btnM2() {
-	console.log("MACRO: btnM2: clicked");
 	msgENTERED = msgENTERED + myMacros[1];
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "M2";
@@ -544,7 +538,6 @@ function btnM2() {
 }
 
 function btnM3() {
-	console.log("MACRO: btnM3: clicked");
 	msgENTERED = msgENTERED + myMacros[2];
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "M3";
@@ -553,7 +546,6 @@ function btnM3() {
 }
 
 function btnM4() {
-	console.log("MACRO: btnM4: clicked");
 	msgENTERED = msgENTERED + myMacros[3];
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "M4";
@@ -565,7 +557,6 @@ function btnM4() {
 /* --- MSG Panel-Module --- */
 
 function btnLOG() {
-	console.log("MSG: btnLOG: clicked");
 	var el_btnLOG = document.getElementById('btnLOG');
 	if (radioLOG == 0) {
 		radioLOG = 1;
@@ -586,7 +577,7 @@ function btnLOG() {
 }
 
 function btnRCLR() {
-	console.log("MSG: btnRCLR: clicked");
+	console.log("MSG: btnRCLR:");
 	msgENTERED = "";
 	msgPARSED = "";
 	previous_entry = "RCLR";
@@ -595,37 +586,38 @@ function btnRCLR() {
 }
 
 function btnCALL() {
-	console.log("MSG: btnCALL: clicked");
-	msgENTERED = msgENTERED + myRadio.CONTACT.mycall+ "-" + myRadio.CONTACT.myssid;
+	msgENTERED = msgENTERED + myRadio.CONTACT.mycall + "-" + myRadio.CONTACT.myssid;
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "CALL";
 	previous_operation == "CLICK";
+	console.log("MSG: btnCALL: " + msgENTERED);
 }
 
 function btnDEST() {
-	console.log("MSG: btnDEST: clicked");
 	msgENTERED = msgENTERED + myRadio.CONTACT.dstcall + "-" + myRadio.CONTACT.dstssid;
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "DEST";
 	previous_operation == "CLICK";
+	console.log("MSG: btnDEST: " + msgENTERED);
 }
 
 function btnHEAD() {
-	console.log("MSG: btnHEAD: clicked");
 	myPacket.header = myRadio.CONTACT.mycall+ "-" + myRadio.CONTACT.myssid + ">" + myRadio.CONTACT.dstcall + "-" + myRadio.CONTACT.dstssid + "|";
 	msgENTERED = msgENTERED + myPacket.header;
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "HEAD";
 	previous_operation == "CLICK";
+	console.log("MSG: btnHEAD: " + msgENTERED);
 }
 
 function btnHELP() {
-	console.log("MSG: btnHELP: clicked");
 	if (radioGUI == 0) {
 		rxwinMSGhelp();
+		console.log("MSG: btnHELP: BASIC;");
 	}
 	if (radioGUI == 1) {
 		rxwinMSGexperthelp();
+		console.log("MSG: btnHELP: EXPERT;");
 	}
 	rxwinMSG('-');
 	previous_entry = "HELP";
@@ -633,20 +625,19 @@ function btnHELP() {
 }
 
 function btnMCLR() {
-	console.log("MSG: btnMCLR: clicked");
 	msgENTERED = "";
 	msgPARSED = "";
 	previous_entry = "MCLR";
 	previous_operation == "CLICK";
 	document.getElementById('msgENTRY').value = "";
+	console.log("MSG: btnMCLR:");
 }
 
 function btnSEND() {
-	console.log("MSG: btnSEND: clicked");
 	msgENTERED = document.getElementById('msgENTRY').value;
-	console.log("PANEL: btnSEND", msgENTERED);
 	previous_entry = "CMDLINE";
 	previous_operation == "CLICK";
+	console.log("MSG: btnSEND: " + msgENTERED);
 
 	/* --- Sort through commands first --- */
 	
@@ -657,7 +648,7 @@ function btnSEND() {
 		myRadio.RADIO.mybeacon = msgSUBPARSED;
 		message = "BEACON = " + myRadio.RADIO.mybeacon;
 		rxwinMSG(message);
-		console.log("CMD: set: Beacon MSG = " + myRadio.RADIO.mybeacon);
+		console.log("SET: BEACON: " + myRadio.RADIO.mybeacon);
 		previous_operation = "msBECN";
 	
 	} else if (msgPARSED[0] === ".myCALL") {                  /*  Set myCALL and mySSID  */
@@ -667,7 +658,7 @@ function btnSEND() {
 		myRadio.CONTACT.myssid = msgPARTICLE[1];
 		message = "CALL = " + myRadio.CONTACT.myssid + "-" + myRadio.CONTACT.myssid;
 		rxwinMSG(message);
-		console.log("CMD: set: CALL =" + myRadio.CONTACT.myssid + "-" + myRadio.CONTACT.myssid);
+		console.log("SET: CALL: " + myRadio.CONTACT.myssid + "-" + myRadio.CONTACT.myssid);
 		previous_operation = "myCALL";
 	
 	} else if (msgPARSED[0] === ".dstCALL") {                 /*  Set myRadio.CONTACT.dstcall and myRadio.CONTACT.dstssid  */
@@ -677,7 +668,7 @@ function btnSEND() {
 		myRadio.CONTACT.dstssid = msgPARTICLE[1];
 		message = "DEST = " + myRadio.CONTACT.dstcall + "-" + myRadio.CONTACT.dstssid;
 		rxwinMSG(message);
-		console.log("CMD: set: DEST =" + myRadio.CONTACT.dstcall + "-" + myRadio.CONTACT.dstssid);
+		console.log("SET: DEST: " + myRadio.CONTACT.dstcall + "-" + myRadio.CONTACT.dstssid);
 		previous_operation = "dstCALL";
 	
 	} else if (msgPARSED[0] === ".macro1") {                 /*  Set Macro Button 1  */
@@ -685,7 +676,7 @@ function btnSEND() {
 		myMacros[0] = msgSUBPARSED;
 		message = "MACRO1 = " + myMacros[0];
 		rxwinMSG(message);
-		console.log("CMD: set: M1 =" + myMacros[0]);
+		console.log("SET: MACRO:1: " + myMacros[0]);
 		previous_operation = "M1";
 	
 	} else if (msgPARSED[0] === ".macro2") {                 /*  Set Macro Button 2  */
@@ -693,7 +684,7 @@ function btnSEND() {
 		myMacros[1] = msgSUBPARSED;
 		message = "MACRO3 = " + myMacros[1];
 		rxwinMSG(message);
-		console.log("CMD: set: PANEL: btnM2: M2 = " + myMacros[1]);
+		console.log("SET: MACRO:2: " + myMacros[1]);
 		previous_operation = "M2";
 	
 	} else if (msgPARSED[0] === ".macro3") {                 /*  Set Macro Button 3  */
@@ -701,7 +692,7 @@ function btnSEND() {
 		myMacros[2] = msgSUBPARSED;
 		message = "MACRO1 = " + myMacros[2];
 		rxwinMSG(message);
-		console.log("CMD: set: M3 = " + myMacros[2]);
+		console.log("SET: MACRO: 3: " + myMacros[2]);
 		previous_operation = "M3";
 		
 	} else if (msgPARSED[0] === ".macro4") {                 /*  Set Macro Button 4  */
@@ -709,14 +700,14 @@ function btnSEND() {
 		myMacros[3] = msgSUBPARSED;
 		message = "MACRO1 = " + myMacros[3];
 		rxwinMSG(message);
-		console.log("CMD: set: M4 = " + myMacros[3]);
+		console.log("SET: MACRO: 4: " + myMacros[3]);
 		previous_operation = "M4";
 
 	/* Anything else is a message to be TX */
 	} else {
 		socket.send("TX:" + msgENTERED);
 		rxwinMSG("TX: "+ msgENTERED);
-		console.log("CMD: SEND:" + msgENTERED);
+		console.log("TX: " + msgENTERED);
 		previous_operation = "SENT";
 	}
 
@@ -730,7 +721,6 @@ function btnSEND() {
 /* --- Receiver-Window --- */
 
 function rxwinRCLR() {
-	console.log("rxWIN: RCLR");
 	for (i = rxDispY; i > 0; i=i-1) {
 		rxDisplay[i] = "-";
 		var rxWINid = "rxWIN" + i;
