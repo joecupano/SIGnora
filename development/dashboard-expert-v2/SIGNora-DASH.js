@@ -316,6 +316,7 @@ function btnMODE() {
 
 }
 
+/* -btnBECON deprecated 20231224 */
 function btnBEACON() {
 	console.log("RADIO: btnBEACON: clicked");
 	var el_btnBEACON = document.getElementById('btnBEACON');

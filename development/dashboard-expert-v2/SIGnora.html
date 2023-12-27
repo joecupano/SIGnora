@@ -1,18 +1,23 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <link href="SIGnora-DASH.css" rel="stylesheet" type="text/css" />
+    <link href="SIGnora.css" rel="stylesheet" type="text/css" />
     <title>radioDASH</title>
   </head>
   <body>
+    <!--- grid container close --->
+
     <div class="grid-container">
 
     <!--- tuner-module --->
 
     <div class="tuner-container">
-      <div class="tuner-display" id="tuner-setting">
-       <span>0</span>
-        <div class="tuner-display-khz">KHz</div>
+      <div class="tuner-display">
+        <div id="tuner-setting"><span>WAIT</span></div>
+        <div class="subdisplay-spreadfactor" id="spreadfactor-setting"> </div>
+        <div class="subdisplay-codingrate4" id="codingrate4-setting"> </div>
+        <div class="subdisplay-bandwidth" id="bandwidth-setting"> </div>
+        <div class="subdisplay-channelname" id="channelname-setting"> </div>
       </div>
       <div class="tuner-numpad">
         <div class="numpad-btn-black"><div id="btn7" onclick="btnNUM(7)">7</div></div>
@@ -26,7 +31,7 @@
         <div class="numpad-btn-black"><div id="btn1" onclick="btnNUM(1)">1</div></div>
         <div class="numpad-btn-black"><div id="btn2" onclick="btnNUM(2)">2</div></div>
         <div class="numpad-btn-black"><div id="btn3" onclick="btnNUM(3)">3</div></div>
-        <div class="numpad-btn-brown"><div id="btnCLR" onclick="btnCLR()">CLR</div></div>
+        <div class="numpad-btn-brown"><div id="btnCLR" onclick="btnCLEAR()">CLR</div></div>
         <div class="numpad-btn-black"><div id="btnDECIMAL" onclick="btnDEC()">&#46;</div></div>
         <div class="numpad-btn-black"><div id="btn0" onclick="btnNUM(0)">0</div></div>
         <div class="numpad-btn-black"><div id="btnHASH" onclick="btnHASH()">&#35;</div></div>
@@ -41,26 +46,45 @@
         <div class="keypad-btn-black"><div id="btnRADIO" onclick="btnRADIO()">RADIO</div></div>
         <div class="keypad-btn-black"><div id="btnTXPWR" onclick="btnTXPWR()">PA</div></div>
         <div class="keypad-btn-black"><div id="btnMODE" onclick="btnMODE()">MODE</div></div>
-        <div class="keypad-btn-black"><div id="btnBEACON" onclick="btnBEACON()">BCN</div></div>
+        <div class="keypad-btn-black"><div id="btnGUI" onclick="btnGUI()">BAS</div></div>
+        <div class="keypad-btn-black"><div id="btnFREQ" onclick="btnFREQ()"> </div></div>
+        <div class="keypad-btn-black"><div id="btnSF" onclick="btnSF()"> </div></div>
+        <div class="keypad-btn-black"><div id="btnBW" onclick="btnBW()"> </div></div>
+        <div class="keypad-btn-black"><div id="btnCR" onclick="btnCR()"> </div></div>
       </div>
-  </div>
-
-  <!--- expansion-control-module- --->
-
-  <div class="cmd-controls-container">
-    <div class="controls-keypad">
-      <div class="keypad-btn-brown"><div id="btnC1" onclick="btnC1()">C1</div></div>
-      <div class="keypad-btn-brown"><div id="btnC2" onclick="btnC2()">C2</div></div>
-      <div class="keypad-btn-brown"><div id="btnC3" onclick="btnC3()">C3</div></div>
-      <div class="keypad-btn-brown"><div id="btnC4" onclick="btnC4()">C4</div></div>
-      <div class="keypad-btn-grey"><div id="btnM1" onclick="btnM1()">M1</div></div>
-      <div class="keypad-btn-grey"><div id="btnM2" onclick="btnM2()">M2</div></div>
-      <div class="keypad-btn-grey"><div id="btnM3" onclick="btnM3()">M3</div></div>
-      <div class="keypad-btn-grey"><div id="btnM4" onclick="btnM4()">M4</div></div>
     </div>
-</div>
 
-    <!--- receiver-window --->
+    <!--- macro-control-module- --->
+
+    <div class="cmd-controls-container">
+      <div class="controls-keypad">
+        <div class="keypad-btn-brown"><div id="btnC1" onclick="btnC1()">C1</div></div>
+        <div class="keypad-btn-brown"><div id="btnC2" onclick="btnC2()">C2</div></div>
+        <div class="keypad-btn-brown"><div id="btnC3" onclick="btnC3()">C3</div></div>
+        <div class="keypad-btn-brown"><div id="btnC4" onclick="btnC4()">C4</div></div>
+        <div class="keypad-btn-grey"><div id="btnM1" onclick="btnM1()">M1</div></div>
+        <div class="keypad-btn-grey"><div id="btnM2" onclick="btnM2()">M2</div></div>
+        <div class="keypad-btn-grey"><div id="btnM3" onclick="btnM3()">M3</div></div>
+        <div class="keypad-btn-grey"><div id="btnM4" onclick="btnM4()">M4</div></div>
+      </div>
+    </div>
+
+    <!--- message-control-module --->
+
+    <div class="msg-controls-container">
+      <div class="controls-keypad">
+        <div class="keypad-btn-brown"><div id="btnCALL" onclick="btnCALL()">CALL</div></div>
+        <div class="keypad-btn-brown"><div id="btnDEST" onclick="btnDEST()">DEST</div></div>
+        <div class="keypad-btn-brown"><div id="btnHEAD" onclick="btnHEAD()">HEAD</div></div>
+        <div class="keypad-btn-brown"><div id="btnHELP" onclick="btnHELP()">HELP</div></div>
+        <div class="keypad-btn-brown"><div id="btnLOG" onclick="btnLOG()">LOG</div></div>
+        <div class="keypad-btn-brown"><div id="btnRCLR" onclick="btnRCLR()">RCLR</div></div>
+        <div class="keypad-btn-brown"><div id="btnMCLR" onclick="btnMCLR()">MCLR</div></div>
+        <div class="keypad-btn-orange"><div id="btnSEND" onclick="btnSEND()">SEND</div></div>
+      </div>
+    </div>
+
+    <!--- receiver-module --->
 
     <div class="rx-container">
       <!--- <textarea class="rx-window" id="msgDISPLAYED" rows="19" columns="75"></textarea> -->
@@ -93,30 +117,18 @@
       <output class="rx-window" id="rxWIN0">X</output><br>
     </div>   
 
-     <!--- message-control-module --->
-
-    <div class="msg-controls-container">
-      <div class="controls-keypad">
-        <div class="keypad-btn-brown"><div id="btnCALL" onclick="btnCALL()">CALL</div></div>
-        <div class="keypad-btn-brown"><div id="btnDEST" onclick="btnDEST()">DEST</div></div>
-        <div class="keypad-btn-brown"><div id="btnHEAD" onclick="btnHEAD()">HEAD</div></div>
-        <div class="keypad-btn-brown"><div id="btnHELP" onclick="btnHELP()">HELP</div></div>
-        <div class="keypad-btn-brown"><div id="btnLOG" onclick="btnLOG()">LOG</div></div>
-        <div class="keypad-btn-brown"><div id="btnRCLR" onclick="btnRCLR()">RCLR</div></div>
-        <div class="keypad-btn-brown"><div id="btnMCLR" onclick="btnMCLR()">MCLR</div></div>
-        <div class="keypad-btn-orange"><div id="btnSEND" onclick="btnSEND()">SEND</div></div>
-      </div>
-  </div>
-
     <!--- transmit-module --->
 
     <div class="tx-container">
       <textarea class="tx-window" id="msgENTRY" rows="2" columns="75"></textarea>
     </div>
+    
+  <!--- grid container close --->
+
   </div>
 
   <!--- Javascript for each module --->
 
-    <script type="text/javascript" src="SIGnora-DASH.js"></script
+    <script type="text/javascript" src="SIGnora.js"></script
    </body>
 </html>
