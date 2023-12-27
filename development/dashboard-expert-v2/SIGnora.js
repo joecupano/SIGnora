@@ -41,6 +41,12 @@ var myRadio = {
 		M3: "73",
 		M4: "TEST TEST TEST"
 	},
+	LORA: {
+		spreadfactor: 7,
+		codingrate4: 8,
+		bandwidth: 125000,
+		frequency: 911250000
+	},
 	CHANNELS: {
 		0: {channelname: "HV0", modem: 0, frequency: 911250000},
 		1: {channelname: "HV1", modem: 0, frequency: 911250000},
@@ -159,26 +165,26 @@ function updateTuner(freq, modem) {
 
 }
 
-function btnNUM(localChannelnum) {
+function btnNUM(numberPad) {
 	if (radioGUI == 0) {
-		myRadio.RADIO.channelname  = myRadio.CHANNELS[localChannelnum].channelname;
-		myRadio.RADIO.modem = myRadio.CHANNELS[localChannelnum].modem;
-		myRadio.RADIO.frequency  = myRadio.CHANNELS[localChannelnum].frequency;
-		loraCR  = myRadio.MODEMS[myRadio.CHANNELS[localChannelnum].modem].codingrate4;
-		loraBW  = myRadio.MODEMS[myRadio.CHANNELS[localChannelnum].modem].bandwidth;
-		loraSF  = myRadio.MODEMS[myRadio.CHANNELS[localChannelnum].modem].spreadfactor;
+		myRadio.RADIO.channelname  = myRadio.CHANNELS[numberPad].channelname;
+		myRadio.RADIO.modem = myRadio.CHANNELS[numberPad].modem;
+		myRadio.RADIO.frequency = myRadio.CHANNELS[numberPad].frequency;
+		myRadio.LORA.codingrate4 = myRadio.MODEMS[myRadio.CHANNELS[numberPad].modem].codingrate4;
+		myRadio.LORA.bandwidth = myRadio.MODEMS[myRadio.CHANNELS[numberPad].modem].bandwidth;
+		myRadio.LORA.spreadfactor = myRadio.MODEMS[myRadio.CHANNELS[numberPad].modem].spreadfactor;
 		console.log("TUNER:CHANNEL:" + myRadio.RADIO.channelname);
-		updateTuner(myRadio.RADIO.frequency, myRadio.RADIO.modem);
+		updateTuner();
 		updateDisplay();
 	}
 	if (radioGUI == 1) {
-		current_entry = localChannelnum;
+		current_entry = numberPad;
 		if (previous_operation !== "DIGIT") {
 			//Fresh Display
-			previous_entry = localChannelnum;
+			previous_entry = numberPad;
 			previous_operation = "DIGIT";
-			console.log("TUNER: first number " + localChannelnum);
-			updateTunerDisplay(current_entry);
+			console.log("TUNER: first number " + numberPad);
+			updateTuner();
 			updateDisplay();
 		}
 		else if (previous_operation == "DIGIT") {
@@ -186,8 +192,8 @@ function btnNUM(localChannelnum) {
 			current_entry += null;
 			current_entry = `${previous_entry}${current_entry}`;
 			previous_entry = current_entry;
-			console.log("TUNER: next number " + localChannelnum);
-			updateTunerDisplay(current_entry);
+			console.log("TUNER: next number " + numberPad);
+			updateTuner(current_entry);
 			updateDisplay();
 		}
 		else {
@@ -234,7 +240,7 @@ function btnENTER() {
 		previous_entry = "";
 		current_entry = "";
 		console.log("TUNER: btnENTER");
-		updateTunerDisplay(myRadio.CURRENT.frequency);
+		updateTuner(myRadio.CURRENT.frequency);
 	}
 }
 
@@ -826,6 +832,10 @@ console.log("INIT: SpreadFactor: ", myRadio.MODEMS[0].spreadfactor);
 console.log("INIT:  CodingRate4: ", myRadio.MODEMS[0].codingrate4);
 console.log("INIT:    Bandwdith: ", myRadio.MODEMS[0].bandwidth);
 
+//LoRa settings
+myRadio.LORA.codingrate4 = myRadio.MODEMS[0].codingrate4;
+myRadio.LORA.bandwidth = myRadio.MODEMS[0].bandwidth;
+myRadio.LORA.spreadfactor = myRadio.MODEMS[0].bandwidth;
 
 // Set Macros M1 to M4
 myMacros[0] = myRadio.MACROS.M1;
