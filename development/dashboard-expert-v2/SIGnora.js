@@ -71,6 +71,12 @@ var loraModems = [0,1,2,3,4];
 /* Selectable LoRa Bandwidths */
 var loraBandwidth = [7800,10400,1500,20800,31250,41700,62500,125000,250000,500000];
 
+/* Selectable LoRa Spreadfactor */
+var loraSpreadfactor = [7,8,9,10,11,12];
+
+/* Selectable LoRa Spreadfactor */
+var loraCodingrate = [5,6,7,8];
+
 /* Programmable Commands C1-C4 */
 var myCommands = ["SET:RADIO:RESET","SET:MODE:LORA","SET:MODE:FSK","SET:RADIO:EXPERT"];
 
@@ -155,10 +161,13 @@ function updateTuner(freq, modem) {
 
 function btnNUM(localChannelnum) {
 	if (radioGUI == 0) {
-		myRadio.RADIO.channelname  = myRadio.CHANNELS[localChannelnum].channelname
-		myRadio.RADIO.modem = myRadio.CHANNELS[localChannelnum].modem
-		myRadio.RADIO.frequency  = myRadio.CHANNELS[localChannelnum].frequency
-		console.log("CHANNEL: change to " + myRadio.RADIO.channelname);
+		myRadio.RADIO.channelname  = myRadio.CHANNELS[localChannelnum].channelname;
+		myRadio.RADIO.modem = myRadio.CHANNELS[localChannelnum].modem;
+		myRadio.RADIO.frequency  = myRadio.CHANNELS[localChannelnum].frequency;
+		loraCR  = myRadio.MODEMS[myRadio.CHANNELS[localChannelnum].modem].codingrate4;
+		loraBW  = myRadio.MODEMS[myRadio.CHANNELS[localChannelnum].modem].bandwidth;
+		loraSF  = myRadio.MODEMS[myRadio.CHANNELS[localChannelnum].modem].spreadfactor;
+		console.log("TUNER:CHANNEL:" + myRadio.RADIO.channelname);
 		updateTuner(myRadio.RADIO.frequency, myRadio.RADIO.modem);
 		updateDisplay();
 	}
@@ -344,9 +353,9 @@ function btnGUI() {
 		el_btnBW.style.background = "Black";
 		el_btnCR.style.background = "Black";
 		el_btnFREQ.innerHTML = "FREQ";
-		el_btnSF.innerHTML = "SF" + loraSF;
+		el_btnSF.innerHTML = "SF";
 		el_btnBW.innerHTML = "BW";
-		el_btnCR.innerHTML = "CR" + loraCR;
+		el_btnCR.innerHTML = "CR";
 		socket.send("SET:RADIO:EXPERT");
 		console.log("RADIO: btnGUI: EXPERT");
 		previous_entry = 1;
@@ -401,7 +410,7 @@ function btnSF() {
 			loraSF = 7
 		}
 		el_btnSF.style.background = "Black";
-		el_btnSF.innerHTML = "SF" + loraSF;
+		el_btnSF.innerHTML = "SF";
 		socket.send("SET:RADIO:LORA:SF" + loraSF);
 		console.log("RADIO: btnSF: " + loraSF);
 		previous_entry = 1;
@@ -419,7 +428,7 @@ function btnCR() {
 			loraCR = 5
 		}
 		el_btnCR.style.background = "Black";
-		el_btnCR.innerHTML = "CR" + loraCR;
+		el_btnCR.innerHTML = "CR";
 		socket.send("SET:RADIO:LORA:CR" + loraCR);
 		console.log("RADIO: btnCR: " + loraCR);
 		previous_entry = 1;
@@ -436,11 +445,12 @@ function btnBW() {
 		if (loraBW > 9) {
 			loraBW = 0		}
 		el_btnBW.style.background = "Black";
-		el_btnBW.innerHTML = "BW" + loraBW;
+		el_btnBW.innerHTML = "BW";
 		socket.send("SET:RADIO:LORA:BW" + loraBW);
 		console.log("RADIO: btnBW: " + loraBW);
 		previous_entry = 1;
 		previous_operation = "RADIO:LORA:BW" + loraBW;
+		updateDisplay()
 	}
 }
 
