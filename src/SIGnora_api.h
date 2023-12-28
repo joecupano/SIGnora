@@ -15,6 +15,8 @@
 //   RADIO
 //
 #define RADIO_RESET "SET:RADIO:RESET"
+#define RADIO_RESET "SET:RADIO:LOG:ON"
+#define RADIO_RESET "SET:RADIO:LOG:OFF"
 //
 #define RADIO_FREQ_SET "SET:RADIO:FREQ:"          // ex.  SET:RADIO:FREQ:911250000  (Freq in Hz)
 #define RADIO_FREQ_GET "GET:RADIO:FREQ"
@@ -26,6 +28,7 @@
 //
 #define RADIO_BEACON_ON "SET:RADIO:BEACON:ON"
 #define RADIO_BEACON_OFF "SET:RADIO:BEACON:OFF"
+#define RADIO_BEACON_OFF "SET:RADIO:BEACON:MSG:"  // ex. SET:RADIO:BEACON:MSG:10-4 Good Buddy
 //
 #define RADIO_LORA "SET:RADIO:LORA"
 #define RADIO_FSK "SET:RADIO:FSK"
@@ -41,8 +44,15 @@
 #define LORA_BW_GET "SET:LORA:BW" 
 
 //
+//  HEADER
+//
+#define HEADER_SOURCE "SET:HEAD:SOURCE:"          // ex.  SET:HEAD:SOURCE:N0CALL
+#define HEADER_DEST "SET:HEAD:DEST:"              // ex.  SET:HEAD:DEST:W1AW  
+#define HEADER_TYPE "SET:HEAD:TYPE:"     
+
+//
 // MESSAGES
 //
-#define TX_MESSAGE "TX:"             // "TX: blablahblah"
-#define RX_MESSAGE "RX:"             // "RX: blahblahblah |RSSI: "
+#define TX_MESSAGE "TX:"                          // "TX: blablahblah"
+#define RX_MESSAGE "RX:"                          // "RX: blahblahblah |RSSI: "
 
