@@ -1,6 +1,6 @@
-# HASviolet ESP32 Reeleases
+# SIGnora Releases
 
-BIN files are made availabel for those experienced with ESP32 and command line tools
+BIN files are made available for those experienced with ESP32 and command line tools
 
 The quickest way to get started with SIGnora is to
 
