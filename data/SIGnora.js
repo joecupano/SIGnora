@@ -2,8 +2,7 @@
 #
 #   SIGnora Client Javascript
 #
-#
-#   20231220-0100
+#   20231228-0100
 #
 #
 */
@@ -20,6 +19,7 @@ var myRadio = {
 		channelname: "HV1",
 		rfmodule: "RFM9X",
 		modemconfig: "Bw125Cr45Sf128",
+		modem: 0,
 		frequency: 911250000,
 		spreadfactor: 7,
 		codingrate4: 8,
@@ -36,11 +36,23 @@ var myRadio = {
 		dstcall: "BEACON",
 		dstssid: "99"
 	},
+	CMACROS: {
+		C1: "BLAH",
+		C2: "BLAH BLAH",
+		C3: "BLAH BLAH BLAH",
+		C4: "BLAH BLAH BLAH BLAH"
+	},
 	MACROS: {
 		M1: "QRZ",
 		M2: "QSL",
 		M3: "73",
 		M4: "TEST TEST TEST"
+	},
+	LORA: {
+		spreadfactor: 7,
+		codingrate4: 8,
+		bandwidth: 125000,
+		frequency: 911250000
 	},
 	CHANNELS: {
 		0: {channelname: "HV0", modem: 0, frequency: 911250000},
@@ -56,12 +68,27 @@ var myRadio = {
 	},
 	MODEMS: {
 		0:{modemconfig: "Bw125Cr45Sf128", modemname: "MEDIUM", spreadfactor: 7, codingrate4: 8, bandwidth: 125000},
-		1:{modemconfig: "Bw500Cr45Sf128", modemname: "FAST-SHRT", spreadfactor: 7, codingrate4: 5, bandwidth: 500000},
-		2:{modemconfig: "Bw31_25Cr48Sf512", modemname: "SLOW-LNG1", spreadfactor: 7, codingrate4: 8, bandwidth: 31250},
-		3:{modemconfig: "Bw125Cr48Sf4096", modemname: "SLOW-LNG2", spreadfactor: 12, codingrate4: 8, bandwidth: 125000},
-		4:{modemconfig: "Bw125Cr45Sf2048", modemname: "SLOW-LNG3", spreadfactor: 8, codingrate4: 5, bandwidth: 125000}
+		1:{modemconfig: "Bw500Cr45Sf128", modemname: "FAST-SHORT", spreadfactor: 7, codingrate4: 5, bandwidth: 500000},
+		2:{modemconfig: "Bw31_25Cr48Sf512", modemname: "SLOW-LONG1", spreadfactor: 7, codingrate4: 8, bandwidth: 31250},
+		3:{modemconfig: "Bw125Cr48Sf4096", modemname: "SLOW-LONG2", spreadfactor: 12, codingrate4: 8, bandwidth: 125000},
+		4:{modemconfig: "Bw125Cr45Sf2048", modemname: "SLOW-LONG3", spreadfactor: 8, codingrate4: 5, bandwidth: 125000}
 	}
 }
+
+/* Programmable Channels */
+var loraChannels = [0,1,2,3,4,5,6,7,8,9];
+
+/* Selectable LoRa modems */
+var loraModems = [0,1,2,3,4];
+
+/* Programmable Commands C1-C4 */
+var myCMacros = ["SET:RADIO:RESET","SET:MODE:LORA","SET:MODE:FSK","SET:RADIO:EXPERT"];
+
+/* Programmable Macros M1-M4 */
+var myMacros = ["QRZ","QSL","73","TEST TEST TEST"];
+
+/* Last Seven Calls heard */
+var myHeard = [ "NOCALLS", "NOCALLS", "NOCALLS", "NOCALLS", "NOCALLS", "NOCALLS", "NOCALLS"];
 
 /* Current MSG Exchange*/
 var myPacket = {
@@ -70,55 +97,34 @@ var myPacket = {
 	message: ""
 }
 
-/* Programmable Channels */
-var myChannels = [0,1,2,3,,5,6,7,8,9];
-
-/* Selectable LoRa modems */
-var myModems = [0,1,2,3,4];
-
-/* Programmable Macros M1-M4 */
-var myMacros = ["QRZ","QSL","73","TEST TEST TEST"];
-
-/* Last Seven Calls heard */
-var myHeard = [ "NOCALLS", "NOCALLS", "NOCALLS", "NOCALLS", "NOCALLS", "NOCALLS", "NOCALLS"];
-
-/* Dashboard Page Elements */
-var tuner_setting_element = document.getElementById('tuner-setting');
-var spreadfactor_setting_element = document.getElementById('spreadfactor-setting');
-var codingrate4_setting_element = document.getElementById('codingrate4-setting');
-var bandwidth_setting_element = document.getElementById('bandwidth-setting');
-var channelname_setting_element = document.getElementById('channelname-setting');
-
 /* Radio and Msg Module Commands */
-var radioCONN = 0;                                                  //  0 = Disconnected, 1 = Connected
-var radioBEACON = 0;                                                //  0 = Beacon OFF, 1 = Beacon ON  
-var radioTXPWR = 5;                                                 //  TX Power can be 5 to 21    
-var radioLOG = 0;                                                   //  0 = Logging OFF, 1 = Logging ON
-var radioMODE = "LORA";                                             //  LORA, (futures FSK, FX.25, ...
-var msgENTERED = "";												//  Typed into TX_Window      
-var msgPARSED = [];													//  For processing two-part command
-var msgSUBPARSED = [];												//  For processing two-part command  
-var msgPARTICLE = [];												//  For processing two-part command  
-
+var radioGUI = 0;                                                //  0 = Basic, 1 = Expert
+var radioFUNCT = 0;                                              //  0 = Listen, 1 = Repeat, 2 = Beacon
+var radioBEACON = 0;                                             //  0 = Beacon OFF, 1 = Beacon ON  
+var radioTXPWR = 5;                                              //  TX Power can be 5 to 21    
+var radioLOG = 0;                                                //  0 = Logging OFF, 1 = Logging ON
+var radioMODE = 0;                                               //  0 = LORA, 1 = XARPS, 2 = FSK
+var msgENTERED = "";				   	        			     //  Typed into TX_Window      
+var msgPARSED = [];					      		    			 //  For processing two-part command
+var msgSUBPARSED = [];			     	     					 //  For processing two-part command  
+var msgPARTICLE = [];		    			    				 //  For processing two-part command  
 var previous_operation = "";
 var current_operation = "";
 var previous_entry = "";
 var current_entry = "";
 var myHostname = location.hostname;
+var wsURI = "wss://" + myHostname + ":8000/wss";		         //  TEST Websocket URI 
+var urlJSON = "https://" + myHostname + ":8000/SIGnora.json";    //  JSON file location
+var getHasJson = new XMLHttpRequest();	     					 //  Holds JSON from Radio
+var rxDisplay = [];							     				 //  Holds whole RX window as 27 lines of text
+var rxDispY = 26;								    			 //  Numbe of rowa for RX Window
 
-// UnComment out if connecting to RPi
-// var wsURI = "wss://" + myHostname + ":8000/wss";					//  TEST Websocket URI 
-// var url = "https://" + myHostname + ":8000/cfg/SIGnora.json";  //  JSON file location
-
-// UnComment if connecting to ESP32
-var wsURI = "ws://" + myHostname + ":8888/ws";				      	//  TEST Websocket URI 
-var url = "http://" + myHostname + ":8000/SIGnora.json";		//  JSON file location
-
-var getHasJson = new XMLHttpRequest();								//  Holds JSON from Radio
-
-var rxDisplay = [];													//  Holds whole RX window as 27 lines of text
-var rxDispY = 26;													//  Numbe of rowa for RX Window
-
+/* Dashboard Page Elements */
+var tuner_setting_element = document.getElementById('tuner-setting');
+var spreadfactor_setting_element = myRadio.LORA.spreadfactor;
+var codingrate4_setting_element = myRadio.LORA.codingrate4;
+var bandwidth_setting_element = myRadio.LORA.bandwidth;
+var channelname_setting_element = document.getElementById('channelname-setting');
 
 /* -            
 /* - FUNCTIONS
@@ -129,76 +135,155 @@ var rxDispY = 26;													//  Numbe of rowa for RX Window
 
 function updateDisplay() {
 	tuner_setting_element = document.getElementById('tuner-setting');
-	tuner_setting_element.innerText = (Number(myRadio.RADIO.frequency)/1000000) + " MHz";
+	tuner_setting_element.innerText = (myRadio.RADIO.frequency/1000000) + " MHz";
 	spreadfactor_setting_element = document.getElementById('spreadfactor-setting');
-	spreadfactor_setting_element.innerText = "SF " + myRadio.RADIO.spreadfactor;
+	spreadfactor_setting_element.innerText = "SF " + myRadio.LORA.spreadfactor;
 	codingrate4_setting_element = document.getElementById('codingrate4-setting');
-	codingrate4_setting_element.innerText = "CR " + myRadio.RADIO.codingrate4;
+	codingrate4_setting_element.innerText = "CR " + myRadio.LORA.codingrate4;
 	bandwidth_setting_element = document.getElementById('bandwidth-setting');
-	bandwidth_setting_element.innerText= "BW " + (Number(myRadio.RADIO.bandwidth)/1000);
+	bandwidth_setting_element.innerText= "BW " + (myRadio.LORA.bandwidth/1000);
 	channelname_setting_element = document.getElementById('channelname-setting');
-	channelname_setting_element.innerText= "CH " + myRadio.RADIO.channelname;
-	console.log("DISPLAY: changed to " + myRadio.RADIO.channelname);
+	if (radioGUI == 0) {
+		channelname_setting_element.innerText= "CH " + myRadio.RADIO.channelname;
+	}
+	else {
+		channelname_setting_element.innerText= " ";
+	}
+	console.log("DISPLAY:UPDATED");
 }
 
-function updateTuner(freq, modem) {
-	myRadio.RADIO.frequency = freq;
-	myRadio.RADIO.modemconfig = myRadio.MODEMS[modem].modemconfig;
-	myRadio.RADIO.bandwidth  = myRadio.MODEMS[modem].bandwidth;
-	myRadio.RADIO.spreadfactor  = myRadio.MODEMS[modem].spreadfactor;
-	myRadio.RADIO.codingrate4 = myRadio.MODEMS[modem].codingrate4;
-	msgSOX = "SET:TUNER:" + myRadio.RADIO.modemconfig + ":" + myRadio.RADIO.frequency;
+function updateFreqDisplay(myNum) {
+	var el = document.getElementById('tuner-setting');
+	el.textContent = myNum;
+	console.log("TUNER: Frequency changed to " + myNum);
+}
+
+function updateTuner() {
+	msgSOX = "SET:TUNER:FREQ:" + myRadio.RADIO.frequency;
 	socket.send(msgSOX);
 	console.log(msgSOX);
-	console.log("SET:MODEM: SF:"+ myRadio.MODEMS[modem].spreadfactor + " CR4:" + myRadio.MODEMS[modem].codingrate4 + " BW:" + myRadio.RADIO.bandwidth);
-
+	msgSOX = "SET:LORA:BANDWIDTH:" + myRadio.LORA.bandwidth;
+	socket.send(msgSOX);
+	console.log(msgSOX);
+	msgSOX = "SET:LORA:SPREAD:" + myRadio.LORA.spreadfactor;
+	socket.send(msgSOX);
+	console.log(msgSOX);
+	msgSOX = "SET:LORA:CODING:" + myRadio.LORA.codingrate4;
+	socket.send(msgSOX);
+	console.log(msgSOX);
 }
 
-function btnNUM(localChannelnum) {
-	myRadio.RADIO.channelname  = myRadio.CHANNELS[localChannelnum].channelname
-	myRadio.RADIO.modem = myRadio.CHANNELS[localChannelnum].modem
-	myRadio.RADIO.frequency  = myRadio.CHANNELS[localChannelnum].frequency
-	console.log("CHANNEL: change to " + myRadio.RADIO.channelname);
-	updateTuner(myRadio.RADIO.frequency, myRadio.RADIO.modem);
-	updateDisplay();
-}
-
-function btnRST() {
-	getHasJson.open('GET', url, true);
-	getHasJson.send(null);
-	getHasJson.onload = function() {
-		if (getHasJson.readyState === getHasJson.DONE && getHasJson.status === 200) {
-			myRadio = JSON.parse(getHasJson.responseText);
-			console.log("TUNER: btnRESET");
+function btnNUM(numberPad) {
+	if (radioGUI == 0) {
+		myRadio.RADIO.channelname  = myRadio.CHANNELS[numberPad].channelname;
+		myRadio.RADIO.modem = myRadio.CHANNELS[numberPad].modem;
+		myRadio.RADIO.frequency = myRadio.CHANNELS[numberPad].frequency;
+		myRadio.LORA.codingrate4 = myRadio.MODEMS[myRadio.CHANNELS[numberPad].modem].codingrate4;
+		myRadio.LORA.bandwidth = myRadio.MODEMS[myRadio.CHANNELS[numberPad].modem].bandwidth;
+		myRadio.LORA.spreadfactor = myRadio.MODEMS[myRadio.CHANNELS[numberPad].modem].spreadfactor;
+		console.log("RADIO:CHANNEL:" + myRadio.RADIO.channelname);
+		updateTuner();
+		updateDisplay();
+	}
+	if (radioGUI == 1) {
+		current_entry = numberPad;
+		if (previous_operation !== "DIGIT") {
+			//Fresh Display
+			previous_entry = numberPad;
+			previous_operation = "DIGIT";
+			console.log("TUNER: first number " + numberPad);
+			updateFreqDisplay();
 		}
-		previous_operation = "RESET";
-		previous_entry = "";
-		current_entry = "";
-		updateDisplay(myRadio.CURRENT.channel);
+		else if (previous_operation == "DIGIT") {
+			//Existing Digit
+			current_entry += null;
+			current_entry = `${previous_entry}${current_entry}`;
+			previous_entry = current_entry;
+			console.log("TUNER: next number " + numberPad);
+			updateFreqDisplay(current_entry);
+		}
+		else {
+			//Invalid
+			current_entry = previous_entry;
+			updateDisplay();
+		}
 	}
 }
+
+function btnRESET() {
+	if (radioGUI == 1) {
+		getHasJson.open('GET', url, true);
+		getHasJson.send(null);
+		getHasJson.onload = function() {
+			if (getHasJson.readyState === getHasJson.DONE && getHasJson.status === 200) {
+				myRadio = JSON.parse(getHasJson.responseText);
+				console.log("TUNER: btnRESET");
+			}
+			previous_operation = "RESET";
+			previous_entry = "";
+			current_entry = "";
+			updateDisplay(myRadio.CURRENT.channel);preadfactor-setting
+		}
+	}
+}
+
+function btnCLEAR() {
+	if (radioGUI == 1) {
+    	var el = document.getElementById('tuner-setting');
+		el.textContent = 0;
+		previous_entry = "";
+		previous_operation == "CLEAR";
+		console.log("TUNER: btnCLEAR");
+	}
+}
+
+function btnENTER() {
+	if (radioGUI == 1) {
+		myRadio.RADIO.frequency = current_entry;
+		socket.send("TUNER:" + myRadio.RADIO.frequency);
+		console.log("TUNER: " + myRadio.RADIO.frequency);
+		previous_operation = "ENTER";
+		previous_entry = "";
+		current_entry = "";
+		console.log("TUNER: btnENTER");
+		updateTuner(myRadio.RADIO.frequency);
+		updateDisplay();
+	}
+}
+
 
 /* --- Radio Panel-Module --- */
 
 function btnRADIO() {
 	console.log("RADIO: btnRADIO: clicked");
 	var el_btnRADIO = document.getElementById('btnRADIO');
-	if (radioCONN == 0) {
-		radioCONN = 1;
+	if (radioFUNCT == 0) {
+		radioFUNCT = 1;
+		el_btnRADIO.style.background = "Orange";
+		el_btnRADIO.innerHTML = "REPT";
+		socket.send("SET:RADIO:REPEAT");
+		console.log("RADIO: btnRADIO: REPEAT");
+		previous_entry = 1;
+		previous_operation = "RADIO:REPEAT";
+	 }
+	 else if (radioFUNCT == 1){
+		radioFUNCT = 2;
 		el_btnRADIO.style.background = "MediumSeaGreen";
-		socket.send("SET:RADIO:ON");
-		console.log("RADIO: btnRADIO: Radio ON");
+		el_btnRADIO.innerHTML = "BECN";
+		socket.send("SET:RADIO:BEACON");
+		console.log("RADIO: btnRADIO: Radio BEACON");
+		previous_entry = 2;
+		previous_operation = "RADIO:BEACON";
+	}
+	else if (radioFUNCT == 2){
+		radioFUNCT = 0;
+		el_btnRADIO.style.background = "Black";
+		el_btnRADIO.innerHTML = "TRX";
+		socket.send("SET:RADIO:TRX");
+		console.log("RADIO: btnRADIO: Radio TRX");
 		previous_entry = 0;
-		previous_operation = "RADIO:ON";
-	 }
-	 else if (radioCONN == 1){
-		 radioCONN = 0;
-		 el_btnRADIO.style.background = "Black";
-		 socket.send("SET:RADIO:OFF");
-		 console.log("RADIO: btnRADIO: Radio OFF");
-		 previous_entry = 0;
-		 previous_operation = "RADIO:OFF";
-	 }
+		previous_operation = "RADIO:TRX";
+	}
  }
 
 function btnTXPWR() {
@@ -225,7 +310,7 @@ function btnTXPWR() {
 	 else if (radioTXPWR == 20){
 		radioTXPWR = 5;
 		el_btnTXPWR.style.background = "Black";
-		el_btnTXPWR.innerHTML = "PA";
+		el_btnTXPWR.innerHTML = "LOW";
 		socket.send("SET:TXPWR:LOW");
 		console.log("RADIO: btnTXPWR: LOW");
 		previous_entry = 0;
@@ -235,6 +320,79 @@ function btnTXPWR() {
 
 function btnMODE() {
 	console.log("RADIO: btnMODE: clicked");
+	var el_btnMODE = document.getElementById('btnMODE');
+	if (radioMODE == 0) {
+		radioMODE = 1;
+		el_btnMODE.style.background = "Orange";
+		el_btnMODE.innerHTML = "XARPS";
+		socket.send("SET:RADIO:XARPS");
+		console.log("RADIO: btnMODE: Mode XARPS");
+		previous_entry = 1;
+		previous_operation = "RADIO:XARPS";
+	 }
+	 else if (radioMODE == 1){
+		radioMODE = 2;
+		el_btnMODE.style.background = "MediumSeaGreen";
+		el_btnMODE.innerHTML = "FSK";
+		socket.send("SET:RADIO:FSK");
+		console.log("RADIO: btnMODE: Mode FSK");
+		previous_entry = 2;
+		previous_operation = "RADIO:FSK";
+	}
+	else if (radioMODE == 2){
+		radioMODE = 0;
+		el_btnMODE.style.background = "Black";
+		el_btnMODE.innerHTML = "LORA";
+		socket.send("SET:RADIO:LORA");
+		console.log("RADIO: btnMODE: Mode LORA");
+		previous_entry = 0;
+		previous_operation = "RADIO:LORA";
+	}
+}
+
+function btnGUI() {
+	console.log("RADIO: btnGUI: clicked");
+	var el_btnGUI = document.getElementById('btnGUI');
+	var el_btnFREQ = document.getElementById('btnFREQ');
+	var el_btnSF = document.getElementById('btnSF');
+	var el_btnBW = document.getElementById('btnBW');
+	var el_btnCR = document.getElementById('btnCR');
+	if (radioGUI == 0) {
+		radioGUI = 1;
+		el_btnGUI.style.background = "Orange";
+		el_btnGUI.innerHTML = "EXP";
+		el_btnFREQ.style.background = "Black";
+		channelname_setting_element.innerText= " ";
+		el_btnSF.style.background = "Black";
+		el_btnBW.style.background = "Black";
+		el_btnCR.style.background = "Black";
+		el_btnFREQ.innerHTML = "FREQ";
+		el_btnSF.innerHTML = "SF";
+		el_btnBW.innerHTML = "BW";
+		el_btnCR.innerHTML = "CR";
+		socket.send("SET:RADIO:EXPERT");
+		console.log("RADIO: btnGUI: EXPERT");
+		previous_entry = 1;
+		previous_operation = "RADIO:EXPERT";
+	} 
+	else {
+		radioGUI = 0;
+		el_btnGUI.style.background = "Black";
+		el_btnGUI.innerHTML = "BASIC";
+		el_btnFREQ.style.background = "Black";
+		channelname_setting_element.innerText= "CH " + myRadio.RADIO.channelname;
+		el_btnSF.style.background = "Black";
+		el_btnBW.style.background = "Black";
+		el_btnCR.style.background = "Black";
+		el_btnFREQ.innerHTML = " ";
+		el_btnSF.innerHTML = " ";
+		el_btnBW.innerHTML = " ";
+		el_btnCR.innerHTML = " ";
+		socket.send("SET:RADIO:BASIC");
+		console.log("RADIO: btnGUI: BASIC");
+		previous_entry = 1;
+		previous_operation = "RADIO:BASIC";
+	}
 }
 
 function btnBEACON() {
@@ -258,10 +416,112 @@ function btnBEACON() {
 	 }
 }
 
+function btnSF() {
+	console.log("RADIO: btnSF: clicked");
+	if (radioGUI == 1) {
+		myRadio.LORA.spreadfactor++;
+		if (myRadio.LORA.spreadfactor > 12) {
+			myRadio.LORA.spreadfactor = 7
+		}
+		socket.send("SET:RADIO:LORA:SF" + myRadio.LORA.spreadfactor);
+		console.log("RADIO: btnSF: " + myRadio.LORA.spreadfactor);
+		previous_entry = 1;
+		previous_operation = "RADIO:LORA:SF" + myRadio.LORA.spreadfactor;
+		updateDisplay()
+	}
+}
+
+function btnCR() {
+	console.log("RADIO: btnCR: clicked");
+	if (radioGUI == 1) {
+		myRadio.LORA.codingrate4++;
+		if (myRadio.LORA.codingrate4 > 8) {
+			myRadio.LORA.codingrate4 = 5
+		}
+		socket.send("SET:RADIO:LORA:CR" + myRadio.LORA.codingrate4);
+		console.log("RADIO: btnCR: " + myRadio.LORA.codingrate4);
+		previous_entry = 1;
+		previous_operation = "RADIO:LORA:CR" + myRadio.LORA.codingrate4;
+		updateDisplay()
+	}
+}
+
+function btnBW() {
+	console.log("RADIO: btnBW: clicked");
+	if (radioGUI == 1) {
+		if (myRadio.LORA.bandwidth == 7800) {
+			myRadio.LORA.bandwidth = 10400;
+		}
+		else if (myRadio.LORA.bandwidth == 10400) {
+			myRadio.LORA.bandwidth = 15600;
+		}
+		else if (myRadio.LORA.bandwidth == 15600) {
+			myRadio.LORA.bandwidth = 20800;
+		}
+		else if (myRadio.LORA.bandwidth == 20800) {
+			myRadio.LORA.bandwidth = 31250;
+		}
+		else if (myRadio.LORA.bandwidth == 31250) {
+			myRadio.LORA.bandwidth = 41700;
+		}
+		else if (myRadio.LORA.bandwidth == 41700) {
+			myRadio.LORA.bandwidth = 62500;
+		}
+		else if (myRadio.LORA.bandwidth == 62500) {
+			myRadio.LORA.bandwidth = 125000;
+		}
+		else if (myRadio.LORA.bandwidth == 125000) {
+			myRadio.LORA.bandwidth = 250000;
+		}
+		else if (myRadio.LORA.bandwidth == 250000) {
+			myRadio.LORA.bandwidth = 500000;
+		}
+		else if (myRadio.LORA.bandwidth == 512000) {
+				myRadio.LORA.bandwidth = 7800;
+		}
+		socket.send("SET:RADIO:LORA:BW" + myRadio.LORA.bandwidth);
+		console.log("RADIO: btnBW: " + myRadio.LORA.bandwidth);
+		previous_entry = 1;
+		previous_operation = ("RADIO:LORA:BW" + myRadio.LORA.bandwidth);
+		updateDisplay()
+	}
+}
+
 /* --- Macros Module --- */
 
+function btnC1() {
+	msgENTERED = msgENTERED + myCMacros[0];
+	document.getElementById('msgENTRY').value = msgENTERED;
+	previous_entry = "C1";
+	previous_operation == "CLICK";
+	console.log("MACRO: btnC1: " + myCMacros[0]);
+}
+
+function btnC2() {
+	msgENTERED = msgENTERED + myCMacros[1];
+	document.getElementById('msgENTRY').value = msgENTERED;
+	previous_entry = "C2";
+	previous_operation == "CLICK";
+	console.log("MACRO: btnC2: " + myCMacros[1]);
+}
+
+function btnC3() {
+	msgENTERED = msgENTERED + myCMacros[2];
+	document.getElementById('msgENTRY').value = msgENTERED;
+	previous_entry = "C3";
+	previous_operation == "CLICK";
+	console.log("MACRO: btnC3: " + myCMacros[2]);
+}
+
+function btnC4() {
+	msgENTERED = msgENTERED + myCMacros[3];
+	document.getElementById('msgENTRY').value = msgENTERED;
+	previous_entry = "C4";
+	previous_operation == "CLICK";
+	console.log("MACRO: btnC4: " + myCMacros[3]);
+}
+
 function btnM1() {
-	console.log("MACRO: btnM1: clicked");
 	msgENTERED = msgENTERED + myMacros[0];
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "M1";
@@ -270,7 +530,6 @@ function btnM1() {
 }
 
 function btnM2() {
-	console.log("MACRO: btnM2: clicked");
 	msgENTERED = msgENTERED + myMacros[1];
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "M2";
@@ -279,7 +538,6 @@ function btnM2() {
 }
 
 function btnM3() {
-	console.log("MACRO: btnM3: clicked");
 	msgENTERED = msgENTERED + myMacros[2];
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "M3";
@@ -288,7 +546,6 @@ function btnM3() {
 }
 
 function btnM4() {
-	console.log("MACRO: btnM4: clicked");
 	msgENTERED = msgENTERED + myMacros[3];
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "M4";
@@ -300,7 +557,6 @@ function btnM4() {
 /* --- MSG Panel-Module --- */
 
 function btnLOG() {
-	console.log("MSG: btnLOG: clicked");
 	var el_btnLOG = document.getElementById('btnLOG');
 	if (radioLOG == 0) {
 		radioLOG = 1;
@@ -321,7 +577,7 @@ function btnLOG() {
 }
 
 function btnRCLR() {
-	console.log("MSG: btnRCLR: clicked");
+	console.log("MSG: btnRCLR:");
 	msgENTERED = "";
 	msgPARSED = "";
 	previous_entry = "RCLR";
@@ -330,53 +586,58 @@ function btnRCLR() {
 }
 
 function btnCALL() {
-	console.log("MSG: btnCALL: clicked");
-	msgENTERED = msgENTERED + myRadio.CONTACT.mycall+ "-" + myRadio.CONTACT.myssid;
+	msgENTERED = msgENTERED + myRadio.CONTACT.mycall + "-" + myRadio.CONTACT.myssid;
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "CALL";
 	previous_operation == "CLICK";
+	console.log("MSG: btnCALL: " + msgENTERED);
 }
 
 function btnDEST() {
-	console.log("MSG: btnDEST: clicked");
 	msgENTERED = msgENTERED + myRadio.CONTACT.dstcall + "-" + myRadio.CONTACT.dstssid;
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "DEST";
 	previous_operation == "CLICK";
+	console.log("MSG: btnDEST: " + msgENTERED);
 }
 
 function btnHEAD() {
-	console.log("MSG: btnHEAD: clicked");
 	myPacket.header = myRadio.CONTACT.mycall+ "-" + myRadio.CONTACT.myssid + ">" + myRadio.CONTACT.dstcall + "-" + myRadio.CONTACT.dstssid + "|";
 	msgENTERED = msgENTERED + myPacket.header;
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "HEAD";
 	previous_operation == "CLICK";
+	console.log("MSG: btnHEAD: " + msgENTERED);
 }
 
 function btnHELP() {
-	console.log("MSG: btnHELP: clicked");
-	rxwinMSGhelp();
+	if (radioGUI == 0) {
+		rxwinMSGhelp();
+		console.log("MSG: btnHELP: BASIC;");
+	}
+	if (radioGUI == 1) {
+		rxwinMSGexperthelp();
+		console.log("MSG: btnHELP: EXPERT;");
+	}
 	rxwinMSG('-');
 	previous_entry = "HELP";
 	previous_operation == "CLICK";
 }
 
 function btnMCLR() {
-	console.log("MSG: btnMCLR: clicked");
 	msgENTERED = "";
 	msgPARSED = "";
 	previous_entry = "MCLR";
 	previous_operation == "CLICK";
 	document.getElementById('msgENTRY').value = "";
+	console.log("MSG: btnMCLR:");
 }
 
 function btnSEND() {
-	console.log("MSG: btnSEND: clicked");
 	msgENTERED = document.getElementById('msgENTRY').value;
-	console.log("PANEL: btnSEND", msgENTERED);
 	previous_entry = "CMDLINE";
 	previous_operation == "CLICK";
+	console.log("MSG: btnSEND: " + msgENTERED);
 
 	/* --- Sort through commands first --- */
 	
@@ -387,7 +648,7 @@ function btnSEND() {
 		myRadio.RADIO.mybeacon = msgSUBPARSED;
 		message = "BEACON = " + myRadio.RADIO.mybeacon;
 		rxwinMSG(message);
-		console.log("CMD: set: Beacon MSG = " + myRadio.RADIO.mybeacon);
+		console.log("SET: BEACON: " + myRadio.RADIO.mybeacon);
 		previous_operation = "msBECN";
 	
 	} else if (msgPARSED[0] === ".myCALL") {                  /*  Set myCALL and mySSID  */
@@ -397,7 +658,7 @@ function btnSEND() {
 		myRadio.CONTACT.myssid = msgPARTICLE[1];
 		message = "CALL = " + myRadio.CONTACT.myssid + "-" + myRadio.CONTACT.myssid;
 		rxwinMSG(message);
-		console.log("CMD: set: CALL =" + myRadio.CONTACT.myssid + "-" + myRadio.CONTACT.myssid);
+		console.log("SET: CALL: " + myRadio.CONTACT.myssid + "-" + myRadio.CONTACT.myssid);
 		previous_operation = "myCALL";
 	
 	} else if (msgPARSED[0] === ".dstCALL") {                 /*  Set myRadio.CONTACT.dstcall and myRadio.CONTACT.dstssid  */
@@ -407,7 +668,7 @@ function btnSEND() {
 		myRadio.CONTACT.dstssid = msgPARTICLE[1];
 		message = "DEST = " + myRadio.CONTACT.dstcall + "-" + myRadio.CONTACT.dstssid;
 		rxwinMSG(message);
-		console.log("CMD: set: DEST =" + myRadio.CONTACT.dstcall + "-" + myRadio.CONTACT.dstssid);
+		console.log("SET: DEST: " + myRadio.CONTACT.dstcall + "-" + myRadio.CONTACT.dstssid);
 		previous_operation = "dstCALL";
 	
 	} else if (msgPARSED[0] === ".macro1") {                 /*  Set Macro Button 1  */
@@ -415,7 +676,7 @@ function btnSEND() {
 		myMacros[0] = msgSUBPARSED;
 		message = "MACRO1 = " + myMacros[0];
 		rxwinMSG(message);
-		console.log("CMD: set: M1 =" + myMacros[0]);
+		console.log("SET: MACRO:1: " + myMacros[0]);
 		previous_operation = "M1";
 	
 	} else if (msgPARSED[0] === ".macro2") {                 /*  Set Macro Button 2  */
@@ -423,7 +684,7 @@ function btnSEND() {
 		myMacros[1] = msgSUBPARSED;
 		message = "MACRO3 = " + myMacros[1];
 		rxwinMSG(message);
-		console.log("CMD: set: PANEL: btnM2: M2 = " + myMacros[1]);
+		console.log("SET: MACRO:2: " + myMacros[1]);
 		previous_operation = "M2";
 	
 	} else if (msgPARSED[0] === ".macro3") {                 /*  Set Macro Button 3  */
@@ -431,7 +692,7 @@ function btnSEND() {
 		myMacros[2] = msgSUBPARSED;
 		message = "MACRO1 = " + myMacros[2];
 		rxwinMSG(message);
-		console.log("CMD: set: M3 = " + myMacros[2]);
+		console.log("SET: MACRO: 3: " + myMacros[2]);
 		previous_operation = "M3";
 		
 	} else if (msgPARSED[0] === ".macro4") {                 /*  Set Macro Button 4  */
@@ -439,14 +700,14 @@ function btnSEND() {
 		myMacros[3] = msgSUBPARSED;
 		message = "MACRO1 = " + myMacros[3];
 		rxwinMSG(message);
-		console.log("CMD: set: M4 = " + myMacros[3]);
+		console.log("SET: MACRO: 4: " + myMacros[3]);
 		previous_operation = "M4";
 
 	/* Anything else is a message to be TX */
 	} else {
 		socket.send("TX:" + msgENTERED);
 		rxwinMSG("TX: "+ msgENTERED);
-		console.log("CMD: SEND:" + msgENTERED);
+		console.log("TX: " + msgENTERED);
 		previous_operation = "SENT";
 	}
 
@@ -460,7 +721,6 @@ function btnSEND() {
 /* --- Receiver-Window --- */
 
 function rxwinRCLR() {
-	console.log("rxWIN: RCLR");
 	for (i = rxDispY; i > 0; i=i-1) {
 		rxDisplay[i] = "-";
 		var rxWINid = "rxWIN" + i;
@@ -486,21 +746,21 @@ function rxwinMSG(message) {
 
 function rxwinMSGhelp() {
 	rxDisplay [26] = "-"
-	rxDisplay [25] = "................ SIGnora WebUI Instructions .............."
+	rxDisplay [25] = "................ SIGnora Basic Instructions .............."
 	rxDisplay [24] = "-"
-	rxDisplay [23] = "......... KEYPAD .......... .......... RF CONTROLS ........."
+	rxDisplay [23] = "........ KEYPAD ......... ...... RADIO CONTROL TOGGLES ...."
 	rxDisplay [22] = "-"
-	rxDisplay [21] = "- FUN = Disabled ---------- -- RADIO = Radio on/off (toggle) "
-  	rxDisplay [20] = "- RST = Reset Keypad ------ ----- PA = RF Power (LOW, MED, HIGH) "
-  	rxDisplay [19] = "- CLR = Clear Display ----- --- MODE = LORA, FSK, AFSK, etc"
-  	rxDisplay [18] = "- ENT = Update Radio Freq - ---- BECN = Beacon msg on/off (toggle)"
+	rxDisplay [21] = "- 0-9 = LoRa Modem  ------ ----- RX / REPEAT / BEACON Modes"
+  	rxDisplay [20] = "- RST = Reset Keypad ---- ----- LOW / MED / HIGH RF Power"
+  	rxDisplay [19] = "- CLR = Clear Display --- ----- LORA / XARPS / FSK Modes"
+  	rxDisplay [18] = "- ----------------------- ----- BASIC /EXPERT Menu"
 	rxDisplay [17] = "-"
 	rxDisplay [16] = "..................... MESSAGE CONTROLS ....................."
 	rxDisplay [15] = "-"
-  	rxDisplay [14] = "- CALL = myCall Macro ----- ---- LOG = Log on/off (toggle)"
-  	rxDisplay [13] = "- DEST = dstCall Macro ---- --- RCLR = Clear RX Window"
-  	rxDisplay [12] = "- HEAD = Message Header---- --- MCLR = TX window clear"
-  	rxDisplay [11] = "- HELP = This screen ------ --- SEND = Send whats in TX Window"
+  	rxDisplay [14] = "- CALL = myCall Macro ------- ---- LOG = Log on/off (toggle)"
+  	rxDisplay [13] = "- DEST = dstCall Macro ------ --- RCLR = Clear RX Window"
+  	rxDisplay [12] = "- HEAD = Message Header------ --- MCLR = TX window clear"
+  	rxDisplay [11] = "- HELP = This screen -------- --- SEND = Sends TX Window"
   	rxDisplay [10] = "- "
 	rxDisplay [9] = ".................... TX WINDOW COMMANDS ...................."
 	rxDisplay [8] = "-"	  
@@ -514,6 +774,35 @@ function rxwinMSGhelp() {
   	rxDisplay [0] = "- Type YourCall>DestCall|MESSAGE in TX window then click SEND"
 }
 
+function rxwinMSGexperthelp() {
+	rxDisplay [26] = "-"
+	rxDisplay [25] = ".................... SIGnora Expert Instructions .................."
+	rxDisplay [24] = "-"
+	rxDisplay [23] = "............ KEYPAD .......... ........ RADIO CONTROL TOGGLES ....."
+	rxDisplay [22] = "-"
+	rxDisplay [21] = "- 0-9,. = Tune Frequency ------- ----- RX/REPEAT/BEACON"
+  	rxDisplay [20] = "- RST = Reset Keypad ------ ----- LOW, MED, HIGH RF Power"
+  	rxDisplay [19] = "- CLR = Clear Display ----- ----  LORA, XARPS, FSK Modes"
+  	rxDisplay [18] = "- ENT = Update Radio Freq - --------- Send quick ID"
+	rxDisplay [17] = "-"
+	rxDisplay [16] = "..................... MESSAGE CONTROLS ....................."
+	rxDisplay [15] = "-"
+  	rxDisplay [14] = "- CALL = myCall Macro ------- ---- LOG = Log on/off (toggle)"
+  	rxDisplay [13] = "- DEST = dstCall Macro ------ --- RCLR = Clear RX Window"
+  	rxDisplay [12] = "- HEAD = Message Header------ --- MCLR = TX window clear"
+  	rxDisplay [11] = "- HELP = This screen -------- --- SEND = Sends TX Window"
+  	rxDisplay [10] = "- "
+	rxDisplay [9] = ".................... TX WINDOW COMMANDS ...................."
+	rxDisplay [8] = "-"	  
+  	rxDisplay [7] = "- .myCALL NOCALL-00     Changes CALL macro to hold NOCALL-00"
+  	rxDisplay [6] = "- .dstCALL BL0B-50      Changes DEST macro to hold BL0B-50"
+  	rxDisplay [5] = "- .macro1 blah blah     Changes M1 button to hold blah blah"
+  	rxDisplay [4] = "-"
+	rxDisplay [3] = "..... TO SEND A MESSAGE"
+	rxDisplay [2] = "-"  
+  	rxDisplay [1] = "- Via Macro buttons click HEAD, M1, then SEND"
+  	rxDisplay [0] = "- Type YourCall>DestCall|MESSAGE in TX window then click SEND"
+}
 
 /* --- Transmitter-Module --- */
 
@@ -536,60 +825,84 @@ function msgENTRY() {
 */
 
 // Get SIGnora.json on page load
-getHasJson.open('GET', url, true);
+getHasJson.open('GET', urlJSON, true);
 getHasJson.send(null);
 getHasJson.onload = function() {
 	if (getHasJson.readyState === getHasJson.DONE && getHasJson.status === 200) {
 		myRadio = JSON.parse(getHasJson.responseText)
 	}
 }
-console.log("INIT: SIGnora.JSON loaded");
-// Channel assignments
-myChannels = Object.keys(myRadio.CHANNELS);
-console.log("INIT:     CH 0,1,2: ", myRadio.CHANNELS[0].channelname, myRadio.CHANNELS[1].channelname, myRadio.CHANNELS[2].channelname);
-console.log("INIT:     CH 3,4,5: ", myRadio.CHANNELS[3].channelname, myRadio.CHANNELS[4].channelname, myRadio.CHANNELS[5].channelname);
-console.log("INIT:     CH 6,7,8: ", myRadio.CHANNELS[6].channelname,  myRadio.CHANNELS[7].channelname, myRadio.CHANNELS[8].channelname);
-console.log("INIT:         CH 9: ", myRadio.CHANNELS[9].channelname);
+console.log("INIT: SIGnora.JSON loading ...");
+console.log(" ");
 
 // Modem assignments
-myModems = Object.keys(myRadio.MODEMS);
-console.log("INIT:        Modem: ", myModems[0]);
-console.log("INIT:   Modem Name: ", myRadio.MODEMS[0].modemname);
-console.log("INIT:  ModemConfig: ", myRadio.MODEMS[0].modemconfig);
-console.log("INIT: SpreadFactor: ", myRadio.MODEMS[0].spreadfactor);
-console.log("INIT:  CodingRate4: ", myRadio.MODEMS[0].codingrate4);
-console.log("INIT:    Bandwdith: ", myRadio.MODEMS[0].bandwidth);
+loraModems = Object.keys(myRadio.MODEMS);
+console.log("INIT:   RADIO SETTINGS");
+console.log("RADIO:        Modem: ", myRadio.modem);
+console.log("RADIO:   Modem Name: ", myRadio.MODEMS[0].modemname);
+console.log("RADIO:  ModemConfig: ", myRadio.MODEMS[0].modemconfig);
+console.log("RADIO: SpreadFactor: ", myRadio.MODEMS[0].spreadfactor);
+console.log("RADIO:  CodingRate4: ", myRadio.MODEMS[0].codingrate4);
+console.log("RADIO:    Bandwdith: ", myRadio.MODEMS[0].bandwidth);
+console.log("RADIO:      Channel: ", myRadio.CHANNELS[0].channelname);
+console.log(" ");
 
+
+//LoRa settings
+myRadio.LORA.codingrate4 = myRadio.MODEMS[0].codingrate4;
+myRadio.LORA.bandwidth = myRadio.MODEMS[0].bandwidth;
+myRadio.LORA.spreadfactor = myRadio.MODEMS[0].spreadfactor;
+
+// Channel assignments
+loraChannels = Object.keys(myRadio.CHANNELS);
+console.log("INIT: HVDN CHANNEL SETTINGS");
+console.log("CHAN:     CH 0,1,2: ", myRadio.CHANNELS[0].channelname, myRadio.CHANNELS[1].channelname, myRadio.CHANNELS[2].channelname);
+console.log("CHAN:     CH 3,4,5: ", myRadio.CHANNELS[3].channelname, myRadio.CHANNELS[4].channelname, myRadio.CHANNELS[5].channelname);
+console.log("CHAN:     CH 6,7,8: ", myRadio.CHANNELS[6].channelname,  myRadio.CHANNELS[7].channelname, myRadio.CHANNELS[8].channelname);
+console.log("CHAN:         CH 9: ", myRadio.CHANNELS[9].channelname);
+console.log(" ");
 
 // Set Macros M1 to M4
+console.log("INIT: MACRO SETTINGS");
+myMacros[0] = myRadio.CMACROS.C1;
+myMacros[1] = myRadio.CMACROS.C2;
+myMacros[2] = myRadio.CMACROS.C3;  
+myMacros[3] = myRadio.CMACROS.C4;
+console.log("MACRO:     Macro C1: ", myCMacros[0]);
+console.log("MACRO:     Macro C2: ", myCMacros[1]);
+console.log("MACRO:     Macro C3: ", myCMacros[2]);
+console.log("MACRO:     Macro C4: ", myCMacros[3]);
 myMacros[0] = myRadio.MACROS.M1;
 myMacros[1] = myRadio.MACROS.M2;
 myMacros[2] = myRadio.MACROS.M3;  
 myMacros[3] = myRadio.MACROS.M4;
-console.log("INIT:     Macro M1: ", myMacros[0]);
-console.log("INIT:     Macro M2: ", myMacros[1]);
-console.log("INIT:     Macro M3: ", myMacros[2]);
-console.log("INIT:     Macro M4: ", myMacros[3]);
+console.log("MACRO:     Macro M1: ", myMacros[0]);
+console.log("MACRO:     Macro M2: ", myMacros[1]);
+console.log("MACRO:     Macro M3: ", myMacros[2]);
+console.log("MACRO:     Macro M4: ", myMacros[3]);
+console.log(" ");
 
-console.log("INIT:     Hostname: " + myHostname);
-console.log("INIT:    Websocket: " + wsURI);
+console.log("INIT: WEBSOCKET CONNECT");
+console.log("SOCK:     Hostname: " + myHostname);
+console.log("SOCK:    Websocket: " + wsURI);
+console.log(" ");
+
+// Load RX Window with Help Message
+if (radioGUI == 0) {
+	rxwinMSGhelp();
+}
+if (radioGUI == 1) {
+	rxwinMSGexperthelp();
+}
+rxwinMSG('-');
+
 console.log("INIT: COMPLETE");
+console.log(" ");
 previous_entry = "";  
 previous_operation = "INIT";                    // Set last operation
 
-// Load RX Window with Help Message
-rxwinMSGhelp();
-rxwinMSG('-');
-
 /* Establish Websocket */
 socket = new WebSocket(wsURI);
-
-//Dynamic HTML5 Elements
-console.log("INIT    HTML Tuner: ", tuner_setting_element); 
-console.log("INIT       HTML SF: ", spreadfactor_setting_element); 
-console.log("INIT      HTML CR4: ", codingrate4_setting_element); 
-console.log("INIT       HTML BW: ", bandwidth_setting_element); 
-console.log("INIT   HTML CHName: ", channelname_setting_element);
 
 updateDisplay();
 
