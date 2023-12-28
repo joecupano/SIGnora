@@ -44,7 +44,7 @@ clients = []                                                             # Clien
 radioDASHRXLOCK = False                                                  # True = RX is running
 radioDASHTXLOCK = False                                                  # True = TX is running
 radioDASHfpath = ""                                                      # Path to files. Change when Pi
-radioDASHcfg = radioDASHfpath + "cfg/radioDASH.json"                     # Config file is in JSON format
+radioDASHcfg = radioDASHfpath + "cfg/SIGnora.json"                     # Config file is in JSON format
 radioDASHmsgs = 'msgs/radioDASH.msgs'                                    # radio writes msgs received here   
 radioDASHpwf = radioDASHfpath + "cfg/radioDASH.pwf"                      # Password file  user:hashedpasswd
 stored_password = ""                                                     # hashedpassword stored in Password file
@@ -87,7 +87,7 @@ class BaseHandler(tornado.web.RequestHandler):
 class MainHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        self.render('radioDASH_INDEX.html')
+        self.render('SIGnora_INDEX.html')
 
 class LoginHandler(BaseHandler):
     def get(self):
