@@ -113,7 +113,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
     def on_message(self, message):
         print ('WS: message from client: %s' % message)
         self.write_message('WS: ACK:')
-        # Message received on the handler
+        # Message received on the handler
         messageParse = message.split (':')
         radioDASHcmd = messageParse[0]
         radioDASHopr = messageParse[1]
