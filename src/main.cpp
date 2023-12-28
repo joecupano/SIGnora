@@ -299,21 +299,21 @@ void onWebSocketEvent(uint8_t clientID, WStype_t type, uint8_t * payload, size_t
       }
       
       //TXPWR
-      if (payloadS == "SET:TXPWR:LOW") {
+      if (payloadS == "SET:RADIO:PWR:LOW") {
         // set me low
         txpwr = 7;
-        webSocket.sendTXT(clientID, "ACK:TXPWR:LOW");
-      } else if (payloadS == "SET:TXPWR:MEDIUM") {
+        webSocket.sendTXT(clientID, "ACK:RADIO:PWR:LOW");
+      } else if (payloadS == "SET:RADIO:PWR:MEDIUM") {
         // set me medium
         txpwr = 14;
-        webSocket.sendTXT(clientID, "ACK:TXPWR:MEDIUM");
-      } else if (payloadS == "SET:TXPWR:HIGH") {
+        webSocket.sendTXT(clientID, "ACK:RADIO:PWR:MEDIUM");
+      } else if (payloadS == "SET:RADIO:PWR:HIGH") {
         // set me high
         txpwr = 21;
-        webSocket.sendTXT(clientID, "ACK:TXPWR:HIGH");
+        webSocket.sendTXT(clientID, "ACK:RADIO:PWR:HIGH");
       }
       
-      //CHANNEL NEW
+      //CHANNEL NEW  20221228-0300 this needs to be changed
       if (payloadS.indexOf("SET:TUNER:") >= 0) {
         webSocket.sendTXT(clientID, "ACK:SET:TUNER:");
         String localjunk = getSubString(payloadS,':',0);
