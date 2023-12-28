@@ -149,17 +149,17 @@ function updateDisplay() {
 	else {
 		channelname_setting_element.innerText= " ";
 	}
-	console.log("DISPLAY:UPDATED");
+	console.log("LOCAL:DISPLAY:UPDATED");
 }
 
 function updateFreqDisplay(myNum) {
 	var el = document.getElementById('tuner-setting');
 	el.textContent = myNum;
-	console.log("TUNER: Frequency changed to " + myNum);
+	console.log("LOCAL:DISPLAY:TUNER:" + myNum);
 }
 
 function updateTuner() {
-	msgSOX = "SET:TUNER:FREQ:" + myRadio.RADIO.frequency;
+	msgSOX = "SET:RADIO:FREQ:" + myRadio.RADIO.frequency;
 	socket.send(msgSOX);
 	console.log(msgSOX);
 	msgSOX = "SET:LORA:BANDWIDTH:" + myRadio.LORA.bandwidth;
@@ -181,7 +181,7 @@ function btnNUM(numberPad) {
 		myRadio.LORA.codingrate4 = myRadio.MODEMS[myRadio.CHANNELS[numberPad].modem].codingrate4;
 		myRadio.LORA.bandwidth = myRadio.MODEMS[myRadio.CHANNELS[numberPad].modem].bandwidth;
 		myRadio.LORA.spreadfactor = myRadio.MODEMS[myRadio.CHANNELS[numberPad].modem].spreadfactor;
-		console.log("RADIO:CHANNEL:" + myRadio.RADIO.channelname);
+		console.log("SET:RADIO:CHANNEL:" + myRadio.RADIO.channelname);
 		updateTuner();
 		updateDisplay();
 	}
@@ -191,7 +191,7 @@ function btnNUM(numberPad) {
 			//Fresh Display
 			previous_entry = numberPad;
 			previous_operation = "DIGIT";
-			console.log("TUNER: first number " + numberPad);
+			console.log("LOCAL:NUMPAD: first number " + numberPad);
 			updateFreqDisplay();
 		}
 		else if (previous_operation == "DIGIT") {
@@ -199,7 +199,7 @@ function btnNUM(numberPad) {
 			current_entry += null;
 			current_entry = `${previous_entry}${current_entry}`;
 			previous_entry = current_entry;
-			console.log("TUNER: next number " + numberPad);
+			console.log("LOCAL:NUMPAD: next number " + numberPad);
 			updateFreqDisplay(current_entry);
 		}
 		else {
@@ -210,14 +210,26 @@ function btnNUM(numberPad) {
 	}
 }
 
+function btnDEC() {
+	console.log("LOCAL:btnDEC:clicked");
+}
+
+function btnHASH() {
+	console.log("LOCAL:btnHASH:clicked");
+}
+
+function btnFUN() {
+	console.log("LOCAL:btnFUN:clicked");
+}
+
 function btnRESET() {
 	if (radioGUI == 1) {
-		getHasJson.open('GET', url, true);
+		getHasJson.open('GET', urlJSON, true);
 		getHasJson.send(null);
 		getHasJson.onload = function() {
 			if (getHasJson.readyState === getHasJson.DONE && getHasJson.status === 200) {
 				myRadio = JSON.parse(getHasJson.responseText);
-				console.log("TUNER: btnRESET");
+				console.log("LOCAL:btnRESET");
 			}
 			previous_operation = "RESET";
 			previous_entry = "";
@@ -233,19 +245,17 @@ function btnCLEAR() {
 		el.textContent = 0;
 		previous_entry = "";
 		previous_operation == "CLEAR";
-		console.log("TUNER: btnCLEAR");
+		console.log("LOCAL:btnCLEAR");
 	}
 }
 
 function btnENTER() {
 	if (radioGUI == 1) {
 		myRadio.RADIO.frequency = current_entry;
-		socket.send("TUNER:" + myRadio.RADIO.frequency);
-		console.log("TUNER: " + myRadio.RADIO.frequency);
+		console.log("LOCAL:btnENTER");
 		previous_operation = "ENTER";
 		previous_entry = "";
 		current_entry = "";
-		console.log("TUNER: btnENTER");
 		updateTuner(myRadio.RADIO.frequency);
 		updateDisplay();
 	}
@@ -255,103 +265,103 @@ function btnENTER() {
 /* --- Radio Panel-Module --- */
 
 function btnRADIO() {
-	console.log("RADIO: btnRADIO: clicked");
+	console.log("LOCAL:btnRADIO:clicked");
 	var el_btnRADIO = document.getElementById('btnRADIO');
 	if (radioFUNCT == 0) {
 		radioFUNCT = 1;
 		el_btnRADIO.style.background = "Orange";
 		el_btnRADIO.innerHTML = "REPT";
 		socket.send("SET:RADIO:REPEAT");
-		console.log("RADIO: btnRADIO: REPEAT");
+		console.log("SET:RADIO:REPEAT");
 		previous_entry = 1;
-		previous_operation = "RADIO:REPEAT";
+		previous_operation = "SET:RADIO:REPEAT";
 	 }
 	 else if (radioFUNCT == 1){
 		radioFUNCT = 2;
 		el_btnRADIO.style.background = "MediumSeaGreen";
 		el_btnRADIO.innerHTML = "BECN";
 		socket.send("SET:RADIO:BEACON");
-		console.log("RADIO: btnRADIO: Radio BEACON");
+		console.log("SET:RADIO:BEACON");
 		previous_entry = 2;
-		previous_operation = "RADIO:BEACON";
+		previous_operation = "SET:RADIO:BEACON";
 	}
 	else if (radioFUNCT == 2){
 		radioFUNCT = 0;
 		el_btnRADIO.style.background = "Black";
 		el_btnRADIO.innerHTML = "TRX";
 		socket.send("SET:RADIO:TRX");
-		console.log("RADIO: btnRADIO: Radio TRX");
+		console.log("SET:RADIO:TRX");
 		previous_entry = 0;
-		previous_operation = "RADIO:TRX";
+		previous_operation = "SET:RADIO:TRX";
 	}
  }
 
 function btnTXPWR() {
-	console.log("RADIO: btnTXPWR: clicked");
+	console.log("LOCAL:btnTXPWR:clicked");
 	var el_btnTXPWR = document.getElementById('btnTXPWR');
 	if (radioTXPWR == 5) {
 		radioTXPWR = 10;
 		el_btnTXPWR.style.background = "MediumSeaGreen";
 		el_btnTXPWR.innerHTML = "MEDM";
-		socket.send("SET:TXPWR:MEDIUM");
-		console.log("RADIO: btnTXPWR: MEDIUM");
+		socket.send("SET:RADIO:PWR:MEDIUM");
+		console.log("SET:RADIO:PWR:MEDIUM");
 		previous_entry = 0;
-		previous_operation = "TXPWR:MEDIUM";
+		previous_operation = "SET:RADIO:TXPWR:MEDIUM";
 	 }
 	 else if (radioTXPWR == 10){
 		 radioTXPWR = 20;
 		 el_btnTXPWR.style.background = "Orange";
 		 el_btnTXPWR.innerHTML = "HIGH";
-		 socket.send("SET:TXPWR:HIGH");
-		 console.log("RADIO: btnTXPWR: HIGH");
+		 socket.send("SET:RADIO:TXPWR:HIGH");
+		 console.log("SET:RADIO:TXPWR:HIGH");
 		 previous_entry = 0;
-		 previous_operation = "TXPWR:HIGH";
+		 previous_operation = "SET:RADIO:TXPWR:HIGH";
 	 }
 	 else if (radioTXPWR == 20){
 		radioTXPWR = 5;
 		el_btnTXPWR.style.background = "Black";
 		el_btnTXPWR.innerHTML = "LOW";
-		socket.send("SET:TXPWR:LOW");
-		console.log("RADIO: btnTXPWR: LOW");
+		socket.send("SET:RADIO:TXPWR:LOW");
+		console.log("SET:RADIO:TXPWR:LOW");
 		previous_entry = 0;
-		previous_operation = "TXPWR:LOW";
+		previous_operation = "SET:RADIO:TXPWR:LOW";
 	}
 }
 
 function btnMODE() {
-	console.log("RADIO: btnMODE: clicked");
+	console.log("LOCAL:btnMODE:clicked");
 	var el_btnMODE = document.getElementById('btnMODE');
 	if (radioMODE == 0) {
 		radioMODE = 1;
 		el_btnMODE.style.background = "Orange";
 		el_btnMODE.innerHTML = "XARPS";
 		socket.send("SET:RADIO:XARPS");
-		console.log("RADIO: btnMODE: Mode XARPS");
+		console.log("SET:RADIO:XARPS");
 		previous_entry = 1;
-		previous_operation = "RADIO:XARPS";
+		previous_operation = "SET:RADIO:XARPS";
 	 }
 	 else if (radioMODE == 1){
 		radioMODE = 2;
 		el_btnMODE.style.background = "MediumSeaGreen";
 		el_btnMODE.innerHTML = "FSK";
 		socket.send("SET:RADIO:FSK");
-		console.log("RADIO: btnMODE: Mode FSK");
+		console.log("SET:RADIO:FSK");
 		previous_entry = 2;
-		previous_operation = "RADIO:FSK";
+		previous_operation = "SET:RADIO:FSK";
 	}
 	else if (radioMODE == 2){
 		radioMODE = 0;
 		el_btnMODE.style.background = "Black";
 		el_btnMODE.innerHTML = "LORA";
 		socket.send("SET:RADIO:LORA");
-		console.log("RADIO: btnMODE: Mode LORA");
+		console.log("SET:RADIO:LORA");
 		previous_entry = 0;
-		previous_operation = "RADIO:LORA";
+		previous_operation = "SET:RADIO:LORA";
 	}
 }
 
 function btnGUI() {
-	console.log("RADIO: btnGUI: clicked");
+	console.log("LOCAL:btnGUI:clicked");
 	var el_btnGUI = document.getElementById('btnGUI');
 	var el_btnFREQ = document.getElementById('btnFREQ');
 	var el_btnSF = document.getElementById('btnSF');
@@ -366,14 +376,13 @@ function btnGUI() {
 		el_btnSF.style.background = "Black";
 		el_btnBW.style.background = "Black";
 		el_btnCR.style.background = "Black";
-		el_btnFREQ.innerHTML = "FREQ";
+		el_btnFREQ.innerHTML = " ";
 		el_btnSF.innerHTML = "SF";
 		el_btnBW.innerHTML = "BW";
 		el_btnCR.innerHTML = "CR";
-		socket.send("SET:RADIO:EXPERT");
-		console.log("RADIO: btnGUI: EXPERT");
+		console.log("LOCAL:btnGUI:EXPERT");
 		previous_entry = 1;
-		previous_operation = "RADIO:EXPERT";
+		previous_operation = "LOCAL:btnGUI:clicked";
 	} 
 	else {
 		radioGUI = 0;
@@ -388,66 +397,54 @@ function btnGUI() {
 		el_btnSF.innerHTML = " ";
 		el_btnBW.innerHTML = " ";
 		el_btnCR.innerHTML = " ";
-		socket.send("SET:RADIO:BASIC");
-		console.log("RADIO: btnGUI: BASIC");
+		console.log("LOCAL:btnGUI:BASIC");
 		previous_entry = 1;
-		previous_operation = "RADIO:BASIC";
+		previous_operation = "LOCAL:btnGUI:clicked";
 	}
 }
 
+function btnFREQ() {
+	console.log("LOCAL:btnFREQ:clicked");
+}
+
 function btnBEACON() {
-	console.log("RADIO: btnBEACON: clicked");
+	console.log("LOCAL:btnBEACON:clicked");
 	var el_btnBEACON = document.getElementById('btnBEACON');
 	if (radioBEACON == 0) {
 		radioBEACON = 1;
 		el_btnBEACON.style.background = "MediumSeaGreen";
-		socket.send("SET:BEACON:ON");
-		console.log("RADIO: btnBEACON: Beacon ON");
+		socket.send("SET:RADIO:BEACON:ON");
+		console.log("SET:RADIO:BEACON:ON");
 		previous_entry = 0;
-		previous_operation = "BEACON:ON";
+		previous_operation = "SET:RADIO:BEACON:ON";
 	 }
 	 else if (radioBEACON == 1){
 		 radioBEACON = 0;
 		 el_btnBEACON.style.background = "Black";
-		 socket.send("SET:BEACON:OFF");
-		 console.log("RADIO: btnBEACON: Beacon OFF");
+		 socket.send("SET:RADIO:BEACON:OFF");
+		 console.log("SET:RADIO:BEACON:OFF");
 		 previous_entry = 0;
-		 previous_operation = "BEACON:OFF";
+		 previous_operation = "SET:RADIO:BEACON:OFF";
 	 }
 }
 
 function btnSF() {
-	console.log("RADIO: btnSF: clicked");
+	console.log("LOCAL:btnSF:clicked");
 	if (radioGUI == 1) {
 		myRadio.LORA.spreadfactor++;
 		if (myRadio.LORA.spreadfactor > 12) {
 			myRadio.LORA.spreadfactor = 7
 		}
-		socket.send("SET:RADIO:LORA:SF" + myRadio.LORA.spreadfactor);
-		console.log("RADIO: btnSF: " + myRadio.LORA.spreadfactor);
+		socket.send("SET:LORA:SF:" + myRadio.LORA.spreadfactor);
+		console.log("SET:LORA:SF:" + myRadio.LORA.spreadfactor);
 		previous_entry = 1;
-		previous_operation = "RADIO:LORA:SF" + myRadio.LORA.spreadfactor;
-		updateDisplay()
-	}
-}
-
-function btnCR() {
-	console.log("RADIO: btnCR: clicked");
-	if (radioGUI == 1) {
-		myRadio.LORA.codingrate4++;
-		if (myRadio.LORA.codingrate4 > 8) {
-			myRadio.LORA.codingrate4 = 5
-		}
-		socket.send("SET:RADIO:LORA:CR" + myRadio.LORA.codingrate4);
-		console.log("RADIO: btnCR: " + myRadio.LORA.codingrate4);
-		previous_entry = 1;
-		previous_operation = "RADIO:LORA:CR" + myRadio.LORA.codingrate4;
+		previous_operation = "SET:LORA:SF:" + myRadio.LORA.spreadfactor;
 		updateDisplay()
 	}
 }
 
 function btnBW() {
-	console.log("RADIO: btnBW: clicked");
+	console.log("LOCAL:btnBW: clicked");
 	if (radioGUI == 1) {
 		if (myRadio.LORA.bandwidth == 7800) {
 			myRadio.LORA.bandwidth = 10400;
@@ -479,10 +476,25 @@ function btnBW() {
 		else if (myRadio.LORA.bandwidth == 512000) {
 				myRadio.LORA.bandwidth = 7800;
 		}
-		socket.send("SET:RADIO:LORA:BW" + myRadio.LORA.bandwidth);
-		console.log("RADIO: btnBW: " + myRadio.LORA.bandwidth);
+		socket.send("SET:LORA:BW:" + myRadio.LORA.bandwidth);
+		console.log("SET:LORA:BW: " + myRadio.LORA.bandwidth);
 		previous_entry = 1;
-		previous_operation = ("RADIO:LORA:BW" + myRadio.LORA.bandwidth);
+		previous_operation = ("SET:LORA:BW:" + myRadio.LORA.bandwidth);
+		updateDisplay()
+	}
+}
+
+function btnCR() {
+	console.log("LOCAL:btnCR:clicked");
+	if (radioGUI == 1) {
+		myRadio.LORA.codingrate4++;
+		if (myRadio.LORA.codingrate4 > 8) {
+			myRadio.LORA.codingrate4 = 5
+		}
+		socket.send("SET:LORA:CR:" + myRadio.LORA.codingrate4);
+		console.log("SET:LORA:CR: " + myRadio.LORA.codingrate4);
+		previous_entry = 1;
+		previous_operation = "SET:LORA:CR:" + myRadio.LORA.codingrate4;
 		updateDisplay()
 	}
 }
@@ -561,63 +573,69 @@ function btnLOG() {
 	if (radioLOG == 0) {
 		radioLOG = 1;
 		el_btnLOG.style.background = "MediumSeaGreen";
-		// Insert local action
-		console.log("MSG: btnLOG: Logging ON");
-		previous_entry = "LOG";
-		previous_operation = "ON";
+		socket.send("SET:RADIO:LOG:ON");
+		console.log("LOCAL:btnLOG:clicked");
+		previous_entry = "SET:RADIO:LOG:ON";
+		previous_operation = "SET:RADIO:LOG:ON";
 	 }
 	 else if (radioLOG == 1){
 		 radioLOG = 0;
 		 el_btnLOG.style.background = "Black";
-		 // Insert local action
-		 console.log("MSG: btnLOG: Logging OFF");
-		 previous_entry = "LOG";
-		 previous_operation = "OFF";
+		 socket.send("SET:RADIO:LOG:OFF");
+		 console.log("LOCAL:btnLOG:clicked");
+		 previous_entry = "SET:RADIO:LOG:OFF";
+		 previous_operation = "SET:RADIO:LOG:OFF";
 	 }
 }
 
 function btnRCLR() {
-	console.log("MSG: btnRCLR:");
+	console.log("LOCAL:btnRCLR:clicked");
 	msgENTERED = "";
 	msgPARSED = "";
 	previous_entry = "RCLR";
 	previous_operation == "CLICK";
+	console.log("LOCAL:btnRCLR:clicked");
 	rxwinRCLR();
 }
 
 function btnCALL() {
+	console.log("LOCAL:btnCALL:clicked");
 	msgENTERED = msgENTERED + myRadio.CONTACT.mycall + "-" + myRadio.CONTACT.myssid;
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "CALL";
 	previous_operation == "CLICK";
-	console.log("MSG: btnCALL: " + msgENTERED);
+	console.log("LOCAL:btnCALL:" + msgENTERED);
 }
 
 function btnDEST() {
+	console.log("LOCAL:btnDEST:clicked");
 	msgENTERED = msgENTERED + myRadio.CONTACT.dstcall + "-" + myRadio.CONTACT.dstssid;
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "DEST";
 	previous_operation == "CLICK";
-	console.log("MSG: btnDEST: " + msgENTERED);
+	console.log("LOCAL:btnDEST:" + msgENTERED);
 }
 
 function btnHEAD() {
+	console.log("LOCAL:btnHEAD:clicked");
 	myPacket.header = myRadio.CONTACT.mycall+ "-" + myRadio.CONTACT.myssid + ">" + myRadio.CONTACT.dstcall + "-" + myRadio.CONTACT.dstssid + "|";
 	msgENTERED = msgENTERED + myPacket.header;
 	document.getElementById('msgENTRY').value = msgENTERED;
 	previous_entry = "HEAD";
 	previous_operation == "CLICK";
-	console.log("MSG: btnHEAD: " + msgENTERED);
+	console.log("LOCAL:btnHEAD:" + msgENTERED);
 }
 
 function btnHELP() {
 	if (radioGUI == 0) {
 		rxwinMSGhelp();
-		console.log("MSG: btnHELP: BASIC;");
+		console.log("LOCAL:btnHELP:clicked");
+		console.log("LOCAL:btnHELP:BASIC");
 	}
 	if (radioGUI == 1) {
 		rxwinMSGexperthelp();
-		console.log("MSG: btnHELP: EXPERT;");
+		console.log("LOCAL:btnHELP:clicked");
+		console.log("LOCAL:btnHELP:EXPERT");
 	}
 	rxwinMSG('-');
 	previous_entry = "HELP";
@@ -630,14 +648,14 @@ function btnMCLR() {
 	previous_entry = "MCLR";
 	previous_operation == "CLICK";
 	document.getElementById('msgENTRY').value = "";
-	console.log("MSG: btnMCLR:");
+	console.log("LOCAL:btnMCLR:clicked");
 }
 
 function btnSEND() {
 	msgENTERED = document.getElementById('msgENTRY').value;
 	previous_entry = "CMDLINE";
 	previous_operation == "CLICK";
-	console.log("MSG: btnSEND: " + msgENTERED);
+	console.log("LOCAL:btnSEND:" + msgENTERED);
 
 	/* --- Sort through commands first --- */
 	
@@ -648,8 +666,8 @@ function btnSEND() {
 		myRadio.RADIO.mybeacon = msgSUBPARSED;
 		message = "BEACON = " + myRadio.RADIO.mybeacon;
 		rxwinMSG(message);
-		console.log("SET: BEACON: " + myRadio.RADIO.mybeacon);
-		previous_operation = "msBECN";
+		console.log("SET:RADIO:BEACON:MSG:" + myRadio.RADIO.mybeacon);
+		previous_operation = "SET:RADIO:BEACON:MSG:"  + myRadio.RADIO.mybeacon;
 	
 	} else if (msgPARSED[0] === ".myCALL") {                  /*  Set myCALL and mySSID  */
 		msgSUBPARSED = msgPARSED[1];
@@ -837,7 +855,7 @@ console.log(" ");
 
 // Modem assignments
 loraModems = Object.keys(myRadio.MODEMS);
-console.log("INIT:   RADIO SETTINGS");
+console.log("INIT:  RADIO SETTINGS");
 console.log("RADIO:        Modem: ", myRadio.modem);
 console.log("RADIO:   Modem Name: ", myRadio.MODEMS[0].modemname);
 console.log("RADIO:  ModemConfig: ", myRadio.MODEMS[0].modemconfig);
@@ -855,11 +873,11 @@ myRadio.LORA.spreadfactor = myRadio.MODEMS[0].spreadfactor;
 
 // Channel assignments
 loraChannels = Object.keys(myRadio.CHANNELS);
-console.log("INIT: HVDN CHANNEL SETTINGS");
-console.log("CHAN:     CH 0,1,2: ", myRadio.CHANNELS[0].channelname, myRadio.CHANNELS[1].channelname, myRadio.CHANNELS[2].channelname);
-console.log("CHAN:     CH 3,4,5: ", myRadio.CHANNELS[3].channelname, myRadio.CHANNELS[4].channelname, myRadio.CHANNELS[5].channelname);
-console.log("CHAN:     CH 6,7,8: ", myRadio.CHANNELS[6].channelname,  myRadio.CHANNELS[7].channelname, myRadio.CHANNELS[8].channelname);
-console.log("CHAN:         CH 9: ", myRadio.CHANNELS[9].channelname);
+console.log("INIT:  HVDN CHANNEL SETTINGS");
+console.log("CHAN:      CH 0,1,2: ", myRadio.CHANNELS[0].channelname, myRadio.CHANNELS[1].channelname, myRadio.CHANNELS[2].channelname);
+console.log("CHAN:      CH 3,4,5: ", myRadio.CHANNELS[3].channelname, myRadio.CHANNELS[4].channelname, myRadio.CHANNELS[5].channelname);
+console.log("CHAN:      CH 6,7,8: ", myRadio.CHANNELS[6].channelname,  myRadio.CHANNELS[7].channelname, myRadio.CHANNELS[8].channelname);
+console.log("CHAN:          CH 9: ", myRadio.CHANNELS[9].channelname);
 console.log(" ");
 
 // Set Macros M1 to M4
@@ -883,8 +901,8 @@ console.log("MACRO:     Macro M4: ", myMacros[3]);
 console.log(" ");
 
 console.log("INIT: WEBSOCKET CONNECT");
-console.log("SOCK:     Hostname: " + myHostname);
-console.log("SOCK:    Websocket: " + wsURI);
+console.log("SOCK:      Hostname: " + myHostname);
+console.log("SOCK:     Websocket: " + wsURI);
 console.log(" ");
 
 // Load RX Window with Help Message
