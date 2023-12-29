@@ -36,12 +36,12 @@
 //
 //  LORA
 //
-#define LORA_SF_SET "SET:LORA:SF:"                // ex.  SET:LORA:SF:7  
-#define LORA_SF_GET "GET:LORA:SF"
-#define LORA_CR_SET "SET:LORA:CR:"                // ex.  SET:LORA:CR:8
-#define LORA_CR_GET "GET:LORA:CR"
-#define LORA_BW_SET "SET:LORA:BW:"                // ex.  SET:LORA:BW:125000   (Freq in Hz)
-#define LORA_BW_GET "SET:LORA:BW" 
+#define LORA_SF_SET "SET:LORA:SPREAD:"            // ex.  SET:LORA:SF:7  
+#define LORA_SF_GET "GET:LORA:SPREAD"
+#define LORA_CR_SET "SET:LORA:CODING:"            // ex.  SET:LORA:CR:8
+#define LORA_CR_GET "GET:LORA:CODING"
+#define LORA_BW_SET "SET:LORA:BANDWIDTH:"         // ex.  SET:LORA:BW:125000   (Freq in Hz)
+#define LORA_BW_GET "SET:LORA:BANDWIDTH" 
 
 //
 //  HEADER

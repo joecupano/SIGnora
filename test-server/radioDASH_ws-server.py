@@ -44,9 +44,9 @@ clients = []                                                             # Clien
 radioDASHRXLOCK = False                                                  # True = RX is running
 radioDASHTXLOCK = False                                                  # True = TX is running
 radioDASHfpath = ""                                                      # Path to files. Change when Pi
-radioDASHcfg = radioDASHfpath + "cfg/SIGnora.json"                     # Config file is in JSON format
+radioDASHcfg = "cfg/SIGnora.json"                     # Config file is in JSON format
 radioDASHmsgs = 'msgs/radioDASH.msgs'                                    # radio writes msgs received here   
-radioDASHpwf = radioDASHfpath + "cfg/radioDASH.pwf"                      # Password file  user:hashedpasswd
+radioDASHpwf = "cfg/radioDASH.pwf"                      # Password file  user:hashedpasswd
 stored_password = ""                                                     # hashedpassword stored in Password file
 
 
@@ -267,6 +267,6 @@ def main():
 
 
 if __name__ == "__main__":
-    DASHit = DASHini()
+#    DASHit = DASHini()
     DASHsess = DASHsess()
     main()

@@ -435,10 +435,10 @@ function btnSF() {
 		if (myRadio.LORA.spreadfactor > 12) {
 			myRadio.LORA.spreadfactor = 7
 		}
-		socket.send("SET:LORA:SF:" + myRadio.LORA.spreadfactor);
-		console.log("SET:LORA:SF:" + myRadio.LORA.spreadfactor);
+		socket.send("SET:LORA:SPREAD:" + myRadio.LORA.spreadfactor);
+		console.log("SET:LORA:SPREAD:" + myRadio.LORA.spreadfactor);
 		previous_entry = 1;
-		previous_operation = "SET:LORA:SF:" + myRadio.LORA.spreadfactor;
+		previous_operation = "SET:LORA:SPREAD:" + myRadio.LORA.spreadfactor;
 		updateDisplay()
 	}
 }
@@ -476,10 +476,10 @@ function btnBW() {
 		else if (myRadio.LORA.bandwidth == 512000) {
 				myRadio.LORA.bandwidth = 7800;
 		}
-		socket.send("SET:LORA:BW:" + myRadio.LORA.bandwidth);
-		console.log("SET:LORA:BW: " + myRadio.LORA.bandwidth);
+		socket.send("SET:LORA:BANDWIDTH:" + myRadio.LORA.bandwidth);
+		console.log("SET:LORA:BANDWIDTH: " + myRadio.LORA.bandwidth);
 		previous_entry = 1;
-		previous_operation = ("SET:LORA:BW:" + myRadio.LORA.bandwidth);
+		previous_operation = ("SET:LORA:BANDWIDTH:" + myRadio.LORA.bandwidth);
 		updateDisplay()
 	}
 }
@@ -491,10 +491,10 @@ function btnCR() {
 		if (myRadio.LORA.codingrate4 > 8) {
 			myRadio.LORA.codingrate4 = 5
 		}
-		socket.send("SET:LORA:CR:" + myRadio.LORA.codingrate4);
-		console.log("SET:LORA:CR: " + myRadio.LORA.codingrate4);
+		socket.send("SET:LORA:CODING:" + myRadio.LORA.codingrate4);
+		console.log("SET:LORA:CODING: " + myRadio.LORA.codingrate4);
 		previous_entry = 1;
-		previous_operation = "SET:LORA:CR:" + myRadio.LORA.codingrate4;
+		previous_operation = "SET:LORA:CODING:" + myRadio.LORA.codingrate4;
 		updateDisplay()
 	}
 }

@@ -84,6 +84,7 @@
     background: linear-gradient(to bottom, #edefe0 45%, #babea2 80%);                                                 /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#edefe0', endColorstr='#babea2',GradientType=0 );  /* IE6-9 */
   }
+  
   .tuner-setting {
     position: absolute;
     bottom: 1px;
