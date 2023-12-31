@@ -1,10 +1,12 @@
 //
-// SIGnora_config.h
+// config.h
 //
-// 20231220-0100
+// 202312231-1000
 //
+//
+
 // WiFi AP Creds
-#define WIFI_APSSID "SIGnora"
+#define WIFI_APSSID "HASviolet"
 #define WIFI_APKEY "purple"
 
 //Uncomment and edit the next two lines if connecting to existing WiFi network

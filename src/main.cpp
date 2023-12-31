@@ -1,8 +1,8 @@
 //
-//  SIGnora
+//  MAIN
 //
 //
-//  20231220-0100
+//  20231231-1000
 //     
 //
 
@@ -17,7 +17,8 @@
 #include "Arduino.h"
 #include "Time.h"
 #include "TimeLib.h"
-#include "SIGnora_config.h"
+#include "config.h"
+#include "api.h"
 #ifdef HELTEC_WIFI_LORA_32_V2
 #include "heltec.h"
 #endif

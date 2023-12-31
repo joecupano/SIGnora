@@ -1,8 +1,8 @@
 /*
 #
-#   SIGnora Client Javascript
+#   Client Javascript
 #
-#   20231228-0100
+#   20231231-1000
 #
 #
 */
@@ -12,7 +12,7 @@
 /* -
 */
 
-/* Object to hold imported SIGnora.json */
+/* Object to hold imported JSON file */
 var myRadio = {
 	RADIO: {
 		channel: 1,
@@ -764,7 +764,7 @@ function rxwinMSG(message) {
 
 function rxwinMSGhelp() {
 	rxDisplay [26] = "-"
-	rxDisplay [25] = ".................... SIGnora Basic Instructions .............."
+	rxDisplay [25] = ".................... Basic Instructions .............."
 	rxDisplay [24] = "-"
 	rxDisplay [23] = "............ KEYPAD .......... ........ CONTROL TOGGLES ........"
 	rxDisplay [22] = "-"
@@ -794,7 +794,7 @@ function rxwinMSGhelp() {
 
 function rxwinMSGexperthelp() {
 	rxDisplay [26] = "-"
-	rxDisplay [25] = ".................... SIGnora Expert Instructions .................."
+	rxDisplay [25] = "....................  Expert Instructions ...................."
 	rxDisplay [24] = "-"
 	rxDisplay [23] = "............ KEYPAD .......... ........ CONTROL TOGGLES ........"
 	rxDisplay [22] = "-"
@@ -842,7 +842,7 @@ function msgENTRY() {
 /* -
 */
 
-// Get SIGnora.json on page load
+// Get JSON file on page load
 getHasJson.open('GET', urlJSON, true);
 getHasJson.send(null);
 getHasJson.onload = function() {
@@ -850,7 +850,7 @@ getHasJson.onload = function() {
 		myRadio = JSON.parse(getHasJson.responseText)
 	}
 }
-console.log("INIT: SIGnora.JSON loading ...");
+console.log("INIT: JSON loading ...");
 console.log(" ");
 
 // Modem assignments
