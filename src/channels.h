@@ -1,7 +1,7 @@
 //
-// SIGnora_channels.h
+// channels.h
 //
-// 223122-0100
+// 20231231-1000
 //
 
 // FREQUENCY and BANDWIDTH are in Hz
